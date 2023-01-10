@@ -33,7 +33,7 @@ endpoints:
         enabled: true
 
 server:
-    contextPath: /postem
+    contextPath: /lts-postem
 
 ---
 grails:
