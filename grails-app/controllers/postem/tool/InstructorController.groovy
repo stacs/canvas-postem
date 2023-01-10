@@ -116,7 +116,10 @@ class InstructorController {
             if(row.key == 'headers'){
                 outs <<  row.value.join(',') + ',Last Viewed' + '\n'
             }
-            else{
+        }
+
+        for(row in parsedFileMap){
+            if(row.key != 'headers'){
                 outs << row.value.join(',') + ','
                 if(userActivity.any{it.loginId == row.key}){
                     for(activity in userActivity){
