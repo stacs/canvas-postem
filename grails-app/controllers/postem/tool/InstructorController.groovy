@@ -34,38 +34,50 @@ class InstructorController {
         String courseId = session.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
-        def badUsers = CSVService.validateFile(f,users)
-        if(!badUsers.empty){
-            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', badUsers: badUsers])
+        if(CSVService.isEmptyFile(f)){
+            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.emptyfile'])
         }
         else{
-            String fileTitle = params.fileTitle + '.csv'
-            Boolean releaseFeedback = false
-            if(params.releaseCheckbox == 'on'){
-                releaseFeedback = true
+            def badUsers = CSVService.validateFile(f,users)
+            if(!badUsers.empty){
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', badUsers: badUsers])
             }
-            canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
-            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+            else{
+                String fileTitle = params.fileTitle + '.csv'
+                Boolean releaseFeedback = false
+                if(params.releaseCheckbox == 'on'){
+                    releaseFeedback = true
+                }
+                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+            }
         }
+
     }
 
     def uploadNewVersion() {
         String courseId = session.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
-        def badUsers = CSVService.validateFile(f,users)
-        if(!badUsers.empty){
-            render(view: 'editFile', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', editType: 'add', badUsers: badUsers, displayName: params.fileTitle])
+        if(CSVService.isEmptyFile(f)){
+            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.emptyfile'])
         }
         else{
-            String fileTitle = params.fileTitle + '.csv'
-            Boolean releaseFeedback = false
-            if(params.releaseCheckbox == 'on'){
-                releaseFeedback = true
+            def badUsers = CSVService.validateFile(f,users)
+            if(!badUsers.empty){
+                render(view: 'editFile', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', editType: 'add', badUsers: badUsers, displayName: params.fileTitle])
             }
-            canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
-            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+            else{
+                String fileTitle = params.fileTitle + '.csv'
+                Boolean releaseFeedback = false
+                if(params.releaseCheckbox == 'on'){
+                    releaseFeedback = true
+                }
+                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+            }
         }
+
     }
 
     def delete(){

@@ -64,17 +64,20 @@ class CanvasFileService {
     def upload(MultipartFile multipartFile, Boolean uploadAsLocked, Boolean releaseFeedback, String courseId, String fileTitle, String userId){
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
         def uploadParams = notifyCanvas(fileTitle, uploadAsLocked, courseId, userId)
-        def awsUploadResponse = awsUpload(uploadParams, multipartFile)
-        def resp = restClient.post(awsUploadResponse.headers.getLocation().toString()){
-            auth('Bearer ' + oauthToken)
+        if(uploadParams.json != null){
+            def awsUploadResponse = awsUpload(uploadParams, multipartFile)
+            def resp = restClient.post(awsUploadResponse.headers.getLocation().toString()){
+                auth('Bearer ' + oauthToken)
+            }
+            String fileId = resp.json.id
+            if(releaseFeedback){
+                hideFile(fileId, true)
+            }
+            else{
+                hideFile(fileId, false)
+            }
         }
-        String fileId = resp.json.id
-        if(releaseFeedback){
-            hideFile(fileId, true)
-        }
-        else{
-            hideFile(fileId, false)
-        }
+
     }
 
     def listFiles(String courseId){

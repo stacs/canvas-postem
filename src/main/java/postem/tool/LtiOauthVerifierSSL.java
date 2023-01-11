@@ -32,8 +32,11 @@ public class LtiOauthVerifierSSL implements LtiVerifier {
     @Override
     public LtiVerificationResult verify(HttpServletRequest request, String secret) throws LtiVerificationException {
         String realPath = OAuthServlet.getRequestURL(request);
-        if(Environment.getCurrent() == Environment.PRODUCTION){
-            realPath = BasicLTIUtil.getRealPath(request, Holders.getConfig().getAt("publicURL").toString());
+        if(request.getHeader("X-Forwarded-Proto").equalsIgnoreCase("https")){
+            realPath = "https://" +
+                    request.getServerName() +
+                    request.getRequestURI() +
+                    (request.getQueryString() != null ? "?" + request.getQueryString() : "");
         }
         logger.info("Real Path: " + realPath);
         OAuthMessage oam = OAuthServlet.getMessage(request, realPath);

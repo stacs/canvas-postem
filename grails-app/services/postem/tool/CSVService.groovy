@@ -91,11 +91,25 @@ class CSVService {
                     badUsers.add('Row ' + rowCounter + ': Login ID is blank')
                 }
                 else{
-                    badUsers.add('Row ' + rowCounter + ': Login ID is not enrolled')
+                    badUsers.add('Row ' + rowCounter + ': ' + nextLine[0] + ' is not enrolled')
                 }
             }
         }
         reader.close()
         return badUsers
+    }
+
+    def isEmptyFile(MultipartFile file){
+        BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))
+        CSVReader csvReader = new CSVReader(reader)
+        String [] nextLine
+        //skip headers
+        csvReader.readNext()
+        def rowCounter = 1
+        while ((nextLine = csvReader.readNext()) != null) {
+            rowCounter++
+        }
+        reader.close()
+        return rowCounter==1 ? true: false;
     }
 }
