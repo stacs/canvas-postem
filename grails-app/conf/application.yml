@@ -37,6 +37,7 @@ server:
 
 ---
 grails:
+    serverURL: 
     mime:
         disable:
             accept:
@@ -119,6 +120,7 @@ dataSources:
         driverClassName: org.h2.Driver
         username: sa
         password:
+        logSql: true
 
 environments:
     development:
