@@ -37,7 +37,7 @@ server:
 
 ---
 grails:
-    serverURL: 
+    serverURL: https://<host>/lts-postem
     mime:
         disable:
             accept:
@@ -116,15 +116,71 @@ hibernate:
 dataSources:
     dataSource:
         pooled: true
-        jmxExport: true
-        driverClassName: org.h2.Driver
-        username: sa
+        driverClassName: com.mysql.jdbc.Driver
+        username:
         password:
         logSql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        properties:
+            jmxEnabled: true
+            initialSize: 5
+            maxActive: 100
+            minIdle: 100
+            maxIdle: 25
+            maxWait: 30000
+            maxAge: 600000
+            timeBetweenEvictionRunsMillis: 5000
+            minEvictableIdleTimeMillis: 60000
+            validationQuery: "SELECT 1"
+            validationQueryTimeout: 3
+            validationInterval: 15000
+            testOnBorrow: true
+            testWhileIdle: true
+            testOnReturn: false
+            ignoreExceptionOnPreLoad: true
+            #http://tomcat.apache.org/tomcat-7.0-doc/jdbc-pool.html#JDBC_interceptors
+            jdbcInterceptors: "ConnectionState;StatementCache(max=200)"
+            defaultTransactionIsolation: 2 # safe default
+            #controls for leaked connections
+            abandonWhenPercentageFull: 100 # settings are active only when pool is full
+            removeAbandonedTimeout: 120
+            removeAbandoned: true
+            #use JMX console to change this setting at runtime
+            logAbandoned: false # causes stacktrace recording overhead, use only for debugging
+            dbProperties:
+                #Mysql specific driver properties
+                #http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html
+                #let Tomcat JDBC Pool handle reconnecting
+                autoReconnect: false
+                #truncation behaviour
+                jdbcCompliantTruncation: false
+                #mysql 0-date conversion
+                zeroDateTimeBehavior: 'convertToNull'
+                #Tomcat JDBC Pool's StatementCache is used instead, so disable mysql driver's cache
+                cachePrepStmts: false
+                cacheCallableStmts: false
+                #Tomcat JDBC Pool's StatementFinalizer keeps track
+                dontTrackOpenResources: true
+                #performance optimization: reduce number of SQLExceptions thrown in mysql driver code
+                holdResultsOpenOverStatementClose: true
+                #enable MySQL query cache - using server prep stmts will disable query caching
+                useServerPrepStmts: false
+                #metadata caching
+                cacheServerConfiguration: true
+                cacheResultSetMetadata: true
+                metadataCacheSize: 100
+                #timeouts for TCP/IP
+                connectTimeout: 15000
+                socketTimeout: 120000
+                #timer tuning (disable)
+                maintainTimeStats: false
+                enableQueryTimeouts: false
+                #misc tuning
+                noDatetimeStringSync: true
 
 environments:
     development:
         dataSources:
             dataSource:
-                dbCreate: create-drop
-                url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+                dbCreate: update
+                url: jdbc:mysql://<host>:3306/<database>?useSSL=false
