@@ -13,7 +13,7 @@
     </div>
     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search...">
     <br><br>
-    <a href="${createLink(action: 'index')}" class="btn btn-info" role="button">Back</a>
+    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-info" role="button">Back</a>
     <table id="myTable" data-toggle="table" data-pagination="true" data-pagination-v-align="both" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
         <thead>
             <tr>
@@ -51,7 +51,7 @@
 
         </tbody>
     </table>
-    <a href="${createLink(action: 'index')}" class="btn btn-info" role="button">Back</a>
+    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-info" role="button">Back</a>
 
     <script>
         function myFunction() {

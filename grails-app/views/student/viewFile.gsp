@@ -19,6 +19,6 @@
             </tr>
         </g:each>
     </table>
-    <a href="${createLink(action: 'index')}" class="btn btn-info" role="button">Back</a>
+    <a href="${createLink(action: 'index', params: [courseId: courseId, user: user ])}" class="btn btn-info" role="button">Back</a>
 </body>
 </html>

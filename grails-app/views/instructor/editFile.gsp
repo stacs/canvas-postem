@@ -8,6 +8,8 @@
     <div class="form-group">
         <g:if test="${editType == 'rename'}">
             <g:form action="renameFile">
+                <g:hiddenField name="courseId" value="${params.courseId}"/>
+                <g:hiddenField name="userId" value="${params.userId}"/>
                 <br>
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">Current Title: <g:field type="text" name="currentName" disabled="true" value="${displayName}"/></label><br>
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">New Title:     <g:textField name="fileName"/></label><br><br>
@@ -40,8 +42,10 @@
                 </g:else>
             </g:if>
             <label>Add/Update Feedback</label><br>
-            <g:link action="downloadFile">Download your course template</g:link><br>
+            <a href="${createLink(controller: 'instructor', action: 'downloadFile', params: [courseId: params.courseId, userId: params.userId])}">Download your course template</a><br>
             <g:uploadForm controller="instructor" action="uploadNewVersion">
+                <g:hiddenField name="courseId" value="${params.courseId}"/>
+                <g:hiddenField name="userId" value="${params.userId}"/>
                 </div>
                 <div class="form-group">
                     <label for="myFile">Postem CSV</label>
@@ -61,7 +65,7 @@
             </g:uploadForm>
         </g:elseif>
         <br>
-        <a href="${createLink(action: 'index')}" class="btn btn-info" role="button">Back</a>
+        <a href="${createLink(action: 'index',params: [courseId: params.courseId, userId: params.userId])}" class="btn btn-info" role="button">Back</a>
     </div>
 </body>
 </html>

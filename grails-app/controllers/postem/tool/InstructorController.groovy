@@ -8,7 +8,7 @@ class InstructorController {
     def CSVService
 
     def index() {
-        String courseId = session.courseId
+        String courseId = params.courseId
         [courseFiles: canvasFileService.listFiles(courseId)]
     }
 
@@ -20,18 +20,18 @@ class InstructorController {
         def parsedFileMap = CSVService.parseFile(fileURL)
         def headerArray = parsedFileMap.get('headers')
         parsedFileMap.remove('headers')
-        [headers: headerArray, contents: parsedFileMap.values(), displayName: params.displayName, released: released, userActivity: userActivity]
+        [headers: headerArray, contents: parsedFileMap.values(), displayName: params.displayName, released: released, userActivity: userActivity, courseId : params.courseId , userId: params.userId]
     }
 
     def editFile() {
         String editType = params.editType
         String fileId = params.fileId
         String displayName = params.displayName
-        [editType: editType, fileId: fileId, displayName: displayName]
+        [editType: editType, fileId: fileId, displayName: displayName, courseId : params.courseId , userId: params.userId]
     }
 
     def upload() {
-        String courseId = session.courseId
+        String courseId = params.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
         if(CSVService.isEmptyFile(f)){
@@ -48,7 +48,7 @@ class InstructorController {
                 if(params.releaseCheckbox == 'on'){
                     releaseFeedback = true
                 }
-                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
+                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
                 render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
             }
         }
@@ -56,7 +56,7 @@ class InstructorController {
     }
 
     def uploadNewVersion() {
-        String courseId = session.courseId
+        String courseId = params.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
         if(CSVService.isEmptyFile(f)){
@@ -73,7 +73,7 @@ class InstructorController {
                 if(params.releaseCheckbox == 'on'){
                     releaseFeedback = true
                 }
-                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, session.userId)
+                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
                 render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
             }
         }
@@ -83,24 +83,24 @@ class InstructorController {
     def delete(){
         String fileId = params.fileId
         canvasFileService.deleteFile(fileId)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(session.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
     }
 
     def release(){
         String fileId = params.fileId
         canvasFileService.hideFile(fileId,true)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(session.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
     }
 
     def unrelease(){
         String fileId = params.fileId
         canvasFileService.hideFile(fileId,false)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(session.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
     }
 
     def downloadFile(){
         def headers = ['Login ID', 'Last Name', 'First Name']
-        def userList = canvasFileService.listUserDetails(session.courseId)
+        def userList = canvasFileService.listUserDetails(params.courseId)
 
         response.setContentType("text/csv")
         response.setHeader("Content-disposition", "filename=\"template.csv\"")
@@ -155,7 +155,7 @@ class InstructorController {
         String fileId = params.fileId
         String fileName = params.fileName + '.csv'
         canvasFileService.updateFileName(fileId, fileName)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(session.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
     }
 
     def handleSizeLimitExceededException() {

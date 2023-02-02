@@ -23,7 +23,7 @@
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="${createLink(action: 'viewFile', params: [fileURL: courseFile.url, fileId: courseFile.fileId])}">View</a></li>
+                        <li><a href="${createLink(action: 'viewFile', params: [fileURL: courseFile.url, fileId: courseFile.fileId, courseId: params.courseId, user: params.user ])}">View</a></li>
                     </ul>
                 </div>
             </td>

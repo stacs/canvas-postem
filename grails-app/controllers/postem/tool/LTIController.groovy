@@ -31,10 +31,10 @@ class LTIController {
                 session["userId"] = params.custom_canvas_user_id
                 String roles = request.getParameter("roles")
                 if(roles.contains('Instructor') || roles.contains('TeachingAssistant') || roles.contains('Administrator')){
-                    redirect(controller: 'instructor', action: 'index', absolute: true)
+                    redirect(controller: 'instructor', action: 'index', absolute: true, params: [user: params.custom_canvas_user_login_id, courseId: params.custom_canvas_course_id, userId: params.custom_canvas_user_id])
                 }
                 else if(roles.contains('Learner')){
-                    redirect(controller: 'student', action: 'index', absolute: true)
+                    redirect(controller: 'student', action: 'index', absolute: true, params: [user: params.custom_canvas_user_login_id, courseId: params.custom_canvas_course_id, userId: params.custom_canvas_user_id])
                 }
             }
             else{

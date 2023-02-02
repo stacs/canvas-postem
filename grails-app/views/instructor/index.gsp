@@ -62,8 +62,10 @@
                     </div>
                 </g:elseif>
                 <label>Add/Update Feedback</label><br>
-                <g:link controller="instructor" action="downloadFile">Download your course template</g:link><br>
+                <a href="${createLink(controller: 'instructor', action: 'downloadFile', params: [courseId: params.courseId, userId: params.userId])}">Download your course template</a><br>
                 <g:uploadForm controller="instructor" action="upload" onsubmit="return checkExistingFile()">
+                    <g:hiddenField name="courseId" value="${params.courseId}"/>
+                    <g:hiddenField name="userId" value="${params.userId}"/>
             </div>
             <div class="form-group">
                 <label for="myFile">Postem CSV</label>
@@ -113,18 +115,18 @@
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="${createLink(controller: 'instructor', action: 'viewFile', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, released: !courseFile.hidden])}">View</a></li>
-                            <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'rename', displayName: courseFile.displayName])}">Edit Title</a></li>
-                            <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'add', displayName: courseFile.displayName])}">Upload New Version</a></li>
-                            <li><a href="${createLink(controller: 'instructor', action: 'downloadCSV', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName])}">Download</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'viewFile', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, released: !courseFile.hidden, courseId: params.courseId, userId: params.userId])}">View</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'rename', displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Edit Title</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'add', displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Upload New Version</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'downloadCSV', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Download</a></li>
                             <g:if test="${courseFile.hidden == true}">
-                                <li><a href="${createLink(controller: 'instructor', action: 'unrelease', params: [fileId: courseFile.fileId])}">Unrelease</a></li>
+                                <li><a href="${createLink(controller: 'instructor', action: 'unrelease', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId])}">Unrelease</a></li>
                             </g:if>
                             <g:else>
-                                <li><a href="${createLink(controller: 'instructor', action: 'release', params: [fileId: courseFile.fileId])}">Release</a></li>
+                                <li><a href="${createLink(controller: 'instructor', action: 'release', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId])}">Release</a></li>
                             </g:else>
                             <li class="divider"></li>
-                            <li><g:link controller="instructor" action="delete" params="[fileId: courseFile.fileId]" onclick="return confirm('Are you sure you want to delete?');">Delete</g:link></li>
+                            <li><g:link controller="instructor" action="delete" params="[fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId]" onclick="return confirm('Are you sure you want to delete?');">Delete</g:link></li>
                         </ul>
                     </div>
                 </td>
