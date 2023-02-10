@@ -126,8 +126,27 @@
                                 <li><a href="${createLink(controller: 'instructor', action: 'release', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId])}">Release</a></li>
                             </g:else>
                             <li class="divider"></li>
-                            <li><g:link controller="instructor" action="delete" params="[fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId]" onclick="return confirm('Are you sure you want to delete?');">Delete</g:link></li>
+                            <li><a href="#fileModal_${courseFile.fileId}" data-toggle="modal" data-target="#fileModal_${courseFile.fileId}">Delete</a></li>
                         </ul>
+                    </div>
+                    <div id="fileModal_${courseFile.fileId}" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Delete</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-0">Are you sure you want to Delete ${courseFile.displayName}?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="confirmDialog_confirm_${courseFile.fileId}_${params.courseId}_${params.userId}">Yes</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </td>
             </tr>

@@ -34,7 +34,10 @@ class InstructorController {
         String courseId = params.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
-        if(CSVService.isEmptyFile(f)){
+        if(!CSVService.isCSVFile(f)){
+            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.invalidformat'])
+        }
+        else if(CSVService.isEmptyFile(f)){
             render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.emptyfile'])
         }
         else{
@@ -59,7 +62,10 @@ class InstructorController {
         String courseId = params.courseId
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
-        if(CSVService.isEmptyFile(f)){
+        if(!CSVService.isCSVFile(f)){
+            render(view: 'index', model: [status: 'error', description: 'error.invalidformat'])
+        }
+        else if(CSVService.isEmptyFile(f)){
             render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.emptyfile'])
         }
         else{
@@ -84,6 +90,7 @@ class InstructorController {
         String fileId = params.fileId
         canvasFileService.deleteFile(fileId)
         render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
+
     }
 
     def release(){

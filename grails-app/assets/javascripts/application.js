@@ -19,3 +19,18 @@ if (typeof jQuery !== 'undefined') {
         });
     })(jQuery);
 }
+
+$("[id^='confirmDialog_confirm_']").click(function(){
+    var modal = $(this);
+    var params = modal.attr("id").split('_');
+    var fileId = params[2];
+    var courseId = params[3];
+    var userId = params[4];
+
+    $.post("/lts-postem/instructor/delete", {"fileId" : fileId, "courseId" : courseId,"userId" : userId}, function(result){});
+    $('#fileModal_'+ fileId).modal('hide');
+    window.open('index?courseId=' + courseId, '_self');
+
+});
+
+

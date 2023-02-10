@@ -112,4 +112,11 @@ class CSVService {
         reader.close()
         return rowCounter==1 ? true: false;
     }
+
+    def isCSVFile(MultipartFile file){
+        if(file.getContentType().equalsIgnoreCase("text/csv")){
+            return true;
+        }
+        return false;
+    }
 }
