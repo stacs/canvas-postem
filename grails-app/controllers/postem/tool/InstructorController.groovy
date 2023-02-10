@@ -63,7 +63,7 @@ class InstructorController {
         MultipartFile f = params.myFile
         def users = canvasFileService.listUserLogins(courseId)
         if(!CSVService.isCSVFile(f)){
-            render(view: 'index', model: [status: 'error', description: 'error.invalidformat'])
+            render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.invalidformat'])
         }
         else if(CSVService.isEmptyFile(f)){
             render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.emptyfile'])
