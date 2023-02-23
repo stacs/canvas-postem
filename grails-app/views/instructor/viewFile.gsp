@@ -5,15 +5,14 @@
 </head>
 
 <body>
-    <div class="panel panel-info">
+    <div class="panel panel-default">
         <div class="panel-heading">${displayName} (<g:if test="${released == 'false'}">Released</g:if><g:else>Unreleased</g:else>)</div>
         <div class="panel-body">
             Below are your students and the feedback you provided in this file.  Use the search box below to look for a specific student.
         </div>
     </div>
     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search...">
-    <br><br>
-    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-info" role="button">Back</a>
+
     <table id="myTable" data-toggle="table" data-pagination="true" data-pagination-v-align="both" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
         <thead>
             <tr>
@@ -30,7 +29,7 @@
                     <g:each in="${content}" var="contentRow">
                         <g:if test="${num++ == 1}">
                             <g:set var="loginId" value="${contentRow}"/>
-                            <td class="${(userActivity.any {it.loginId == loginId}) ? '' : 'danger'}">${contentRow}</td>
+                            <td class="${(userActivity.any {it.loginId == loginId}) ? '' : 'success'}">${contentRow}</td>
                         </g:if>
                         <g:else>
                             <td>${contentRow}</td>
@@ -51,7 +50,8 @@
 
         </tbody>
     </table>
-    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-info" role="button">Back</a>
+    <br><br>
+    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom" style="text-decoration:none" role="button">Back</a>
 
     <script>
         function myFunction() {

@@ -226,8 +226,15 @@ class CanvasFileService {
                 for(jsonObj in respArr){
                     String sortableName = jsonObj.sortable_name
                     String[] splitName = sortableName.split(',')
-                    def user = [jsonObj.login_id, splitName[0].trim(), splitName[1].trim()]
+                    def user;
+                    if(splitName.length == 2){
+                        user = [jsonObj.login_id, splitName[0].trim(), splitName[1].trim()]
+                    }
+                    else{
+                        user = [jsonObj.login_id, splitName[0], ""]
+                    }
                     users.add(user)
+
                 }
             }
         }

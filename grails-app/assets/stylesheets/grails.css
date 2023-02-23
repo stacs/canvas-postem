@@ -44,10 +44,10 @@ pre {
 
 }
 .navbar-default, .navbar-static-top {
-    background-color: #006dba;
+    background-color: #242d4b;
     border: 0px;
 }
-a.navbar-brand {
+span.navbar-brand {
     color: white !important;
     font-size: 19px !important;
 }
@@ -70,6 +70,12 @@ a.navbar-brand {
 }
 .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
     background-color: #db4800;
+}
+
+.btn-custom {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
 }
 
 @media (min-width: 768px) {

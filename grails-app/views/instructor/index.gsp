@@ -24,14 +24,14 @@
 </head>
 
 <body>
-    <div class="panel panel-info">
+    <div class="panel panel-default">
         <div class="panel-body">
             <dl>
                 <dt>Description</dt>
-                <dd class="text-info">The Post'Em Tool is a way for instructors to provide detailed text feedback to students by uploading a single CSV file.  Your CSV file can contain multiple columns of feedback and you can upload as many different CSV files as you wish.</dd>
+                <dd class="text-default">The Posted Feedback tool is a way for instructors to provide detailed text feedback to students by uploading a single CSV file.  Your CSV file can contain multiple columns of feedback and you can upload as many different CSV files as you wish.</dd>
                 <dt>Instructions</dt>
-                <dd class="text-info">a) To begin, download your course template CSV file below.  Your template will contain all of the required columns and is pre-populated with your student roster.  Add your data/feedback/grades in the columns to the right of the required columns.  Make sure that you put the feedback for each student in the appropriate row and column.</dd>
-                <dd class="text-info">b) When you are ready, save and upload your completed template file below.</dd>
+                <dd class="text-default">a) To begin, download your course template CSV file below.  Your template will contain all of the required columns and is pre-populated with your student roster.  Add your data/feedback/grades in the columns to the right of the required columns.  Make sure that you put the feedback for each student in the appropriate row and column.</dd>
+                <dd class="text-default">b) When you are ready, save and upload your completed template file below.</dd>
             </dl>
         </div>
     </div>
@@ -68,7 +68,7 @@
                     <g:hiddenField name="userId" value="${params.userId}"/>
             </div>
             <div class="form-group">
-                <label for="myFile">Postem CSV</label>
+                <label for="myFile">Feedback File (CSV)</label>
                 <input type="file" class="form-control-file" aria-describedby="fileHelp" name="myFile" id="myFile" onchange="setFileName()"/>
                 <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB</small>
             </div>
@@ -109,8 +109,8 @@
                 </td>
                 <td>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-danger">Actions</button>
-                        <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-primary">Actions</button>
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>

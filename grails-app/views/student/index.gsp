@@ -17,8 +17,8 @@
             <td>${courseFile.updatedAt}</td>
             <td>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-danger">Actions</button>
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    <button type="button" class="btn btn-primary">Actions</button>
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>

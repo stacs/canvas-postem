@@ -48,7 +48,7 @@
                 <g:hiddenField name="userId" value="${params.userId}"/>
                 </div>
                 <div class="form-group">
-                    <label for="myFile">Postem CSV</label>
+                    <label for="myFile">Feedback File (CSV)</label>
                     <input type="file" class="form-control-file" aria-describedby="fileHelp" name="myFile" id="myFile"/>
                     <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB<</small>
                 </div>
@@ -65,7 +65,7 @@
             </g:uploadForm>
         </g:elseif>
         <br>
-        <a href="${createLink(action: 'index',params: [courseId: params.courseId, userId: params.userId])}" class="btn btn-info" role="button">Back</a>
+        <a href="${createLink(action: 'index',params: [courseId: params.courseId, userId: params.userId])}" class="btn btn-custom" style="text-decoration:none" role="button">Back</a>
     </div>
 </body>
 </html>
