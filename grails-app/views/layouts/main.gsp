@@ -23,9 +23,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <span class="navbar-brand">
+                <h1 class="navbar-brand">
                 Posted Feedback
-                </span>
+                </h1>
 
             </div>
             <div class="navbar-collapse collapse" aria-expanded="false" style="height: 0.8px;">

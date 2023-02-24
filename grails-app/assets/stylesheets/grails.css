@@ -47,7 +47,7 @@ pre {
     background-color: #242d4b;
     border: 0px;
 }
-span.navbar-brand {
+h1.navbar-brand {
     color: white !important;
     font-size: 19px !important;
 }
