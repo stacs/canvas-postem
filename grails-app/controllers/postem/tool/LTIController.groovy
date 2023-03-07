@@ -1,9 +1,15 @@
 package postem.tool
 
+import grails.core.GrailsApplication
 import org.imsglobal.lti.launch.LtiVerificationResult
 import org.imsglobal.lti.launch.LtiVerifier
 
+import grails.plugin.cookiesession.SerializableSession
+import javax.servlet.http.HttpSession
+
 class LTIController {
+
+    GrailsApplication grailsApplication
 
     def launch() {
         // Request params map
@@ -29,6 +35,15 @@ class LTIController {
                 session["user"] = params.custom_canvas_user_login_id
                 session["courseId"] = params.custom_canvas_course_id
                 session["userId"] = params.custom_canvas_user_id
+
+                def ctx = grailsApplication.mainContext
+                //println(Arrays.asList(ctx.getBeanDefinitionNames()));
+                def sessionRepository = ctx.getBean("sessionRepository")
+                HttpSession httpsession = request.getSession();
+                httpsession.setAttribute("oauthSignature", params.oauth_signature)
+                sessionRepository.saveSession((SerializableSession)httpsession, response)
+                response.setHeader("Set-Cookie", response.getHeader("Set-Cookie") + "; SameSite=None");
+
                 String roles = request.getParameter("roles")
                 if(roles.contains('Instructor') || roles.contains('TeachingAssistant') || roles.contains('Administrator')){
                     redirect(controller: 'instructor', action: 'index', absolute: true, params: [user: params.custom_canvas_user_login_id, courseId: params.custom_canvas_course_id, userId: params.custom_canvas_user_id])

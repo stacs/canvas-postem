@@ -37,7 +37,7 @@ server:
 
 ---
 grails:
-    serverURL: https://<host>/lts-postem
+    serverURL:
     mime:
         disable:
             accept:
@@ -91,6 +91,22 @@ grails:
                 scriptlets: html
                 taglib: none
                 staticparts: none
+    plugin:
+        cookiesession:
+            enabled: true
+            encryptcookie: true
+            cryptoalgorithm: "Blowfish"
+            secret:
+            cookiecount: 1
+            maxcookiesize: 2048
+            sessiontimeout: 3600
+            cookiename: 'gsession'
+            condenseexceptions: false
+            setsecure: true
+            httponly: true
+            path: '/'
+            comment: 'SameSite=None'
+            serializer: 'java'
 endpoints:
     jmx:
         unique-names: true
