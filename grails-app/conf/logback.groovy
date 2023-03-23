@@ -22,4 +22,20 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 
-root(INFO, ['STDOUT'])
+appender('gelf', biz.paluch.logging.gelf.logback.GelfLogbackAppender) {
+    host = 'udp:stacs-log-s.its.virginia.edu'
+    port = 12201
+    version = 1.1
+    facility = 'lts-postedfeedback'
+    extractStackTrace = true
+    filterStackTrace = true
+    includeLocation =  true
+    mdcProfiling = true
+    timestampPattern = 'yyyy-MM-dd HH:mm:ss,SSS'
+    maximumMessageSize = 8192
+}
+
+logger 'org.hibernate.type.descriptor.sql.BasicBinder', ERROR, ['STDOUT','gelf']
+logger 'org.hibernate.SQL', ERROR, ['STDOUT', 'gelf']
+logger 'grails.plugin.cookiesession.CookieSessionRepository', ERROR, ['STDOUT', 'gelf']
+root(INFO, ['STDOUT', 'gelf'])

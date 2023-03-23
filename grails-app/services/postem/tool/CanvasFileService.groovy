@@ -23,11 +23,12 @@ class CanvasFileService {
     private def notifyCanvas(String fileName, Boolean uploadAsLocked, String courseId, String userId) {
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
+        def folderId = getFolderId(courseId)
         def resp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/files?as_user_id=' + userId){
             auth('Bearer ' + oauthToken)
             json{
                 name = fileName
-                parent_folder_path = "postem"
+                parent_folder_id = folderId
                 locked = uploadAsLocked
             }
         }
@@ -56,7 +57,7 @@ class CanvasFileService {
         }
 
         def js = resp.json.toString()
-        println("result ->"+js)
+        //println("result ->"+js)
         //JSON.parse(resp)
         return resp
     }
@@ -70,6 +71,8 @@ class CanvasFileService {
                 auth('Bearer ' + oauthToken)
             }
             String fileId = resp.json.id
+            log.info("[" + grailsApplication.config.getProperty('grails.serverURL') +"] File Uploaded for Posted Feedback Tool by user " + userId + " in course " + courseId + ". File Details : Title = " + fileTitle + "," + " Id = " + fileId + "," + "location = " + awsUploadResponse.headers.getLocation().toString() )
+
             if(releaseFeedback){
                 hideFile(fileId, true)
             }
@@ -81,16 +84,17 @@ class CanvasFileService {
     }
 
     def listFiles(String courseId){
+        def folder = 'Posted Feedback (Do NOT Publish)'
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
-        def resp = restClient.get(canvasBaseURL + '/api/v1/courses/' + courseId + '/folders/by_path/postem'){
+        def resp = restClient.get(canvasBaseURL + '/api/v1/courses/' + courseId + '/folders/by_path/' + folder){
             auth('Bearer ' + oauthToken)
         }
         if(resp.status != 200){
             def createFolderResp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/folders'){
                 auth('Bearer ' + oauthToken)
                 json{
-                    name = 'postem'
+                    name = folder
                     locked = true
                     parent_folder_path = '/'
                 }
@@ -100,12 +104,41 @@ class CanvasFileService {
         JSONArray respArr = (JSONArray)resp.json
         def folderId = -1
         for(jsonObj in respArr){
-            if(jsonObj.name == 'postem'){
+            if(jsonObj.name == folder){
                 folderId = jsonObj.id
                 break
             }
         }
         return fetchFiles(folderId)
+    }
+
+    def getFolderId(String courseId){
+        def folder = 'Posted Feedback (Do NOT Publish)'
+        def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
+        def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
+        def resp = restClient.get(canvasBaseURL + '/api/v1/courses/' + courseId + '/folders/by_path/' + folder){
+            auth('Bearer ' + oauthToken)
+        }
+        if(resp.status != 200){
+            def createFolderResp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/folders'){
+                auth('Bearer ' + oauthToken)
+                json{
+                    name = folder
+                    locked = true
+                    parent_folder_path = '/'
+                }
+            }
+            return createFolderResp.json.id;
+        }
+        JSONArray respArr = (JSONArray)resp.json
+        def folderId = -1
+        for(jsonObj in respArr){
+            if(jsonObj.name == folder){
+                folderId = jsonObj.id
+                break
+            }
+        }
+        return folderId;
     }
 
     private def fetchFiles(Long folderId){

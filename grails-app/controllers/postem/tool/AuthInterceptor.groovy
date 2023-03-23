@@ -23,7 +23,7 @@ class AuthInterceptor {
             response.setHeader("Set-Cookie", response.getHeader("Set-Cookie") + "; SameSite=None");
         }
         else{
-            render(status: 401, text: 'Access denied')
+            render(status: 401, text: 'You do not have permission to view this page or your session has timed out. Please reload the page if your session has timed out.')
             return false
         }
 

@@ -36,6 +36,8 @@ class LTIController {
                 session["courseId"] = params.custom_canvas_course_id
                 session["userId"] = params.custom_canvas_user_id
 
+                log.info("[" + grailsApplication.config.getProperty('grails.serverURL') +"] Authenticated LTI request by Posted Feedback Tool for user " + params.custom_canvas_user_login_id + " in course " + params.custom_canvas_course_id)
+
                 def ctx = grailsApplication.mainContext
                 //println(Arrays.asList(ctx.getBeanDefinitionNames()));
                 def sessionRepository = ctx.getBean("sessionRepository")
