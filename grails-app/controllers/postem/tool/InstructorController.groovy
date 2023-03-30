@@ -1,5 +1,6 @@
 package postem.tool
 
+import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 
 class InstructorController {
@@ -21,6 +22,25 @@ class InstructorController {
         def headerArray = parsedFileMap.get('headers')
         parsedFileMap.remove('headers')
         [headers: headerArray, contents: parsedFileMap.values(), displayName: params.displayName, released: released, userActivity: userActivity, courseId : params.courseId , userId: params.userId]
+    }
+
+    def studentView(){
+        String fileURL = params.fileURL
+        def parsedFileMap = CSVService.parseFile(fileURL)
+        parsedFileMap.remove('headers')
+        def userMap = new HashMap()
+        parsedFileMap.each { key, val ->
+            userMap.put(key, val[1] + "," + val[2] )
+        }
+        def sortedMap = userMap.sort { it.value.toLowerCase() }
+
+        [logins: sortedMap, displayName: params.displayName, fileURL :params.fileURL,  user: params.user, userId: params.userId, courseId : params.courseId]
+    }
+
+    def studentFileInfo(){
+        String fileURL = params.fileURL
+        def response = CSVService.parseFileForUser(fileURL,(String)params.user)
+        render response as JSON
     }
 
     def editFile() {
@@ -52,7 +72,7 @@ class InstructorController {
                     releaseFeedback = true
                 }
                 canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
-                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded'])
             }
         }
 
@@ -60,7 +80,7 @@ class InstructorController {
 
     def uploadNewVersion() {
         String courseId = params.courseId
-        MultipartFile f = params.myFile
+        MultipartFile f = params.myFileNewVersion
         def users = canvasFileService.listUserLogins(courseId)
         if(!CSVService.isCSVFile(f)){
             render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'error', description: 'error.invalidformat'])
@@ -80,7 +100,7 @@ class InstructorController {
                     releaseFeedback = true
                 }
                 canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
-                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success'])
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded'])
             }
         }
 
@@ -89,20 +109,20 @@ class InstructorController {
     def delete(){
         String fileId = params.fileId
         canvasFileService.deleteFile(fileId)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback File successfully deleted'])
 
     }
 
     def release(){
         String fileId = params.fileId
         canvasFileService.hideFile(fileId,true)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback release success!'])
     }
 
     def unrelease(){
         String fileId = params.fileId
         canvasFileService.hideFile(fileId,false)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback unrelease success!'])
     }
 
     def downloadFile(){
@@ -162,7 +182,7 @@ class InstructorController {
         String fileId = params.fileId
         String fileName = params.fileName + '.csv'
         canvasFileService.updateFileName(fileId, fileName)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback File successfully renamed to ' + fileName ])
     }
 
     def handleSizeLimitExceededException() {

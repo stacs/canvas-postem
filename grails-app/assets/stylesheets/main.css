@@ -1,12 +1,12 @@
 /* FONT STACK */
-body,
+/*body,
 input, select, textarea {
     font-family: "Open Sans", "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
+}*/
 
-h1, h2, h3, h4, h5, h6 {
+/*h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
-}
+}*/
 
 /* BASE LAYOUT */
 
@@ -50,7 +50,7 @@ a:hover, a:active {
 }
 
 h1, h2, h3 {
-    font-weight: normal;
+    /*font-weight: normal;*/
     font-size: 1.25em;
     margin: 0.8em 0 0.3em 0;
 }
@@ -394,7 +394,7 @@ td, th {
     vertical-align: top;
 }
 
-th {
+/*th {
     background-color: #efefef;
     background-image: -moz-linear-gradient(top, #ffffff, #eaeaea);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #eaeaea));
@@ -404,7 +404,7 @@ th {
     font-weight: bold;
     line-height: 1.7em;
     padding: 0.2em 0.6em;
-}
+}*/
 
 thead th {
     white-space: nowrap;
@@ -445,13 +445,21 @@ th.desc a {
     background: #ffffff;
 }
 
-th:hover, tr:hover {
+/*th:hover, tr:hover {
     background: #5e89ba;
-}
+}*/
 
+.fixed-table-body {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    height: 100% !important;
+}
+.fixed-table-container {
+    border: none !important;
+}
 /* PAGINATION */
 
-.pagination {
+/*.pagination {
     border-top: 0;
     margin: 0.8em 1em 0.3em;
     padding: 0.3em 0.2em;
@@ -460,7 +468,7 @@ th:hover, tr:hover {
     -webkit-box-shadow: 0 0 3px 1px #AAAAAA;
     box-shadow: 0 0 3px 1px #AAAAAA;
     background-color: #EFEFEF;
-}
+}*/
 
 .pagination a,
 .pagination .currentStep {

@@ -6,20 +6,20 @@
 
 <body>
     <div class="panel panel-default">
-        <div class="panel-heading">${displayName} (<g:if test="${released == 'false'}">Released</g:if><g:else>Unreleased</g:else>)</div>
+        <div class="panel-heading"> <label>${displayName} </label> (<g:if test="${released == 'false'}">Released</g:if><g:else>Unreleased</g:else>)</div>
         <div class="panel-body">
             Below are your students and the feedback you provided in this file.  Use the search box below to look for a specific student.
         </div>
     </div>
-    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search...">
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search..." style="float:right"><br />
 
-    <table id="myTable" data-toggle="table" data-pagination="true" data-pagination-v-align="both" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
+    <table id="myTable" class="table table-striped table-bordered" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
         <thead>
             <tr>
                 <g:each in="${headers}" var="header">
-                    <th data-sortable="true">${header}</th>
+                    <th data-sortable="true" scope="col">${header}</th>
                 </g:each>
-                <th data-sortable="true">Last Checked</th>
+                <th data-sortable="true" scope="col">Last Checked</th>
             </tr>
         </thead>
         <tbody>
@@ -29,10 +29,10 @@
                     <g:each in="${content}" var="contentRow">
                         <g:if test="${num++ == 1}">
                             <g:set var="loginId" value="${contentRow}"/>
-                            <td class="${(userActivity.any {it.loginId == loginId}) ? '' : 'success'}">${contentRow}</td>
+                            <td class="${(userActivity.any {it.loginId == loginId}) ? '' : 'success'}" scope="row">${contentRow}</td>
                         </g:if>
                         <g:else>
-                            <td>${contentRow}</td>
+                            <td scope="row">${contentRow}</td>
                         </g:else>
                     </g:each>
                     <g:if test="${userActivity.any {it.loginId == loginId}}">

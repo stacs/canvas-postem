@@ -5,7 +5,7 @@
 </head>
 
 <body>
-<table class="table table-hover">
+<table class="table table-striped table-bordered" id="studentViewTable">
     <tr>
         <th>Title</th>
         <th>Last Modified</th>
@@ -16,16 +16,7 @@
             <td>${courseFile.displayName}</td>
             <td>${courseFile.updatedAt}</td>
             <td>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary">Actions</button>
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                    </button>
-                    <ul class="dropdown-menu" role="menu">
-                        <li><a href="${createLink(action: 'viewFile', params: [fileURL: courseFile.url, fileId: courseFile.fileId, courseId: params.courseId, user: params.user ])}">View</a></li>
-                    </ul>
-                </div>
+              <a href="${createLink(action: 'viewFile', params: [fileURL: courseFile.url, fileId: courseFile.fileId, courseId: params.courseId, user: params.user ])}">View</a>
             </td>
         </tr>
     </g:each>

@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <table id="myTable" class="table table-hover">
+    <table id="myTable" class="table table-striped table-bordered">
         <tr>
             <g:each in="${headers}" var="header">
                 <th>${header}</th>

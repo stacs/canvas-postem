@@ -2,6 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
+     <script type="text/javascript">
+            function setFileNameNewVersion()
+            {
+                var theFileNewVersion = document.getElementById('myFileNewVersion');
+                var filenameNewVersion = $('#myFileNewVersion').val().split('\\').pop();
+                $('#filenameNewVersion').val(filenameNewVersion);
+                $('#filenameNewVersion').attr('placeholder', filenameNewVersion);
+                $('#filenameNewVersion').focus();
+            }
+     </script>
 </head>
 
 <body>
@@ -48,9 +58,14 @@
                 <g:hiddenField name="userId" value="${params.userId}"/>
                 </div>
                 <div class="form-group">
-                    <label for="myFile">Feedback File (CSV)</label>
-                    <input type="file" class="form-control-file" aria-describedby="fileHelp" name="myFile" id="myFile"/>
-                    <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB<</small>
+                    <label for="myFileNewVersion">Feedback File (CSV)</label><br/>
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-describedby="fileHelpNewVersion" >Choose File</button>
+                    <input type="file" class="form-control-file" name="myFileNewVersion" id="myFileNewVersion" onchange="setFileNameNewVersion()" style="display: none;"/>
+                    <label for="filenameNewVersion" class="hide">
+                        Uploaded File
+                    </label>
+                    <input type="text" id="filenameNewVersion" autocomplete="off" readonly placeholder="No File Uploaded"><br/>
+                    <small id="fileHelpNewVersion" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB</small>
                 </div>
                 <g:hiddenField name="fileTitle" value="${displayName}" />
                 <div class="form-group">
