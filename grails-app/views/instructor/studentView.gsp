@@ -5,9 +5,8 @@
     <script type="text/javascript">
                 function changeList(fileURL) {
                        var choice = document.getElementById('participantselect').value;
-                       console.log(choice)
                        if(choice == 'null'){
-                           $("#output").html("No Student is selected");
+                           $("#studentInfo").html("No Student is selected");
                        }
                        else{
                             $.ajax({
@@ -25,16 +24,15 @@
                                          let result = response[choice];
                                          for (i = 0; i < result.length; i++) {
                                              if(i == 0){
-                                                 html += "<Strong>Student ID : </Strong>" + result[0] + "</br>";
-                                                 html += "<Strong>Student Name : </Strong>" + result[1] + "," + result[2] + "</br>";
+                                                 html += "<strong>Student ID : </strong>" + result[0] + "</br>";
+                                                 html += "<strong>Student Name : </strong>" + result[1] + "," + result[2] + "</br>";
                                                  i +=2;
                                              }
                                              else {
                                                  html += "<strong>" + headers[i] + ": </strong>" + result[i] + "</br>";
                                              }
                                          }
-
-                                         $("#output").html(html);
+                                         $("#studentInfo").html(html);
                                     }
                             });
                        }
@@ -54,8 +52,8 @@
           onchange="JavaScript:changeList('${fileURL}')" />
 
     </div>
-    <div id="output" style="padding-left:10px">
-    </div>
+    <div id="output" style="padding-left:10px" aria-label="student information" tabindex="0" aria-describedby="studentInfo"><span id="studentInfo">
+    </span></div>
     <br><br>
     <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom" style="text-decoration:none" role="button">Back</a>
 </body>
