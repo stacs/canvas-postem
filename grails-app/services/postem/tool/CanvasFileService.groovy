@@ -24,7 +24,7 @@ class CanvasFileService {
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
         def folderId = getFolderId(courseId)
-        def resp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/files?as_user_id=' + userId){
+        def resp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/files'){
             auth('Bearer ' + oauthToken)
             json{
                 name = fileName
@@ -168,12 +168,15 @@ class CanvasFileService {
             if(resp.json instanceof JSONArray){
                 JSONArray respArr = (JSONArray) resp.json
                 for (jsonObj in respArr) {
-                    String formattedFileName = jsonObj.display_name
-                    if (formattedFileName.contains('.csv')) {
-                        formattedFileName = formattedFileName.take(formattedFileName.lastIndexOf('.'))
+                    if(jsonObj != null) {
+                        String formattedFileName = jsonObj.display_name
+                        if (formattedFileName.contains('.csv')) {
+                            formattedFileName = formattedFileName.take(formattedFileName.lastIndexOf('.'))
+                        }
+                        String modifiedBy = jsonObj.user != null ? jsonObj.user.display_name : ""
+                        File file = new File(fileId: jsonObj.id, displayName: formattedFileName, fileName: jsonObj.filename, modifiedBy: modifiedBy, updatedAt: Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", (String) jsonObj.updated_at), locked: jsonObj.locked, hidden: jsonObj.hidden, url: jsonObj.url)
+                        fileList.add(file)
                     }
-                    File file = new File(fileId: jsonObj.id, displayName: formattedFileName, fileName: jsonObj.filename, modifiedBy: jsonObj.user.display_name, updatedAt: Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", (String) jsonObj.updated_at), locked: jsonObj.locked, hidden: jsonObj.hidden, url: jsonObj.url)
-                    fileList.add(file)
                 }
             }
         }
@@ -183,9 +186,20 @@ class CanvasFileService {
     def deleteFile(String fileId){
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
-        restClient.delete(canvasBaseURL + '/api/v1/files/' + fileId){
+        def resp = restClient.get(canvasBaseURL + '/api/v1/files/' + fileId){
             auth('Bearer ' + oauthToken)
         }
+        def display_name = "";
+        if (resp != null && resp.json != null) {
+            def jsonObj = resp.json
+            display_name =  jsonObj.display_name
+            restClient.delete(canvasBaseURL + '/api/v1/files/' + fileId){
+                auth('Bearer ' + oauthToken)
+            }
+
+        }
+        return display_name
+
     }
 
     def hideFile(String fileId, Boolean hide){

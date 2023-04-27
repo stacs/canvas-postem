@@ -30,7 +30,7 @@ class InstructorController {
         parsedFileMap.remove('headers')
         def userMap = new HashMap()
         parsedFileMap.each { key, val ->
-            userMap.put(key, val[1] + "," + val[2] )
+            userMap.put(key, val[1] + "," + val[2] + "(" + val[0] + ")" )
         }
         def sortedMap = userMap.sort { it.value.toLowerCase() }
 
@@ -100,7 +100,7 @@ class InstructorController {
                     releaseFeedback = true
                 }
                 canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
-                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded'])
+                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded.'])
             }
         }
 
@@ -108,21 +108,23 @@ class InstructorController {
 
     def delete(){
         String fileId = params.fileId
-        canvasFileService.deleteFile(fileId)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback File successfully deleted'])
+        String fileName = canvasFileService.deleteFile(fileId)
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: fileName +' successfully deleted.'])
 
     }
 
     def release(){
         String fileId = params.fileId
+        String displayName = params.displayName
         canvasFileService.hideFile(fileId,true)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback release success!'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: displayName +' successfully released to students.'])
     }
 
     def unrelease(){
         String fileId = params.fileId
+        String displayName = params.displayName
         canvasFileService.hideFile(fileId,false)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback unrelease success!'])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: displayName +' successfully unreleased.'])
     }
 
     def downloadFile(){
@@ -182,7 +184,7 @@ class InstructorController {
         String fileId = params.fileId
         String fileName = params.fileName + '.csv'
         canvasFileService.updateFileName(fileId, fileName)
-        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback File successfully renamed to ' + fileName ])
+        render(view: 'index', model: [courseFiles: canvasFileService.listFiles(params.courseId), status: 'success', description: 'Feedback file successfully renamed to ' + fileName + '.' ])
     }
 
     def handleSizeLimitExceededException() {

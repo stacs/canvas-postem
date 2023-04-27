@@ -24,7 +24,7 @@
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">Current Title: <g:field type="text" name="currentName" disabled="true" value="${displayName}"/></label><br>
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">New Title:     <g:textField name="fileName"/></label><br><br>
                 <g:hiddenField name="fileId" value="${fileId}" />
-                <input style="margin-left: 230px" type="submit" class="btn btn-primary" value="Submit">
+                <input style="margin-left: 230px" type="submit" class="btn btn-custom-dark" value="Submit">
             </g:form>
         </g:if>
         <g:elseif test="${editType == 'add'}">
@@ -59,7 +59,7 @@
                 </div>
                 <div class="form-group">
                     <label for="myFileNewVersion">Feedback File (CSV)</label><br/>
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-describedby="fileHelpNewVersion" >Choose File</button>
+                    <button type="button" class="btn btn-custom" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-describedby="fileHelpNewVersion" >Choose File</button>
                     <input type="file" class="form-control-file" name="myFileNewVersion" id="myFileNewVersion" onchange="setFileNameNewVersion()" style="display: none;"/>
                     <label for="filenameNewVersion" class="hide">
                         Uploaded File
@@ -69,18 +69,18 @@
                 </div>
                 <g:hiddenField name="fileTitle" value="${displayName}" />
                 <div class="form-group">
-                    <label class="form-check-label">
+                    <label>
                         <g:checkBox name="releaseCheckbox" value="${false}" />
                         Release feedback to participants?
                     </label>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-custom-dark">Upload</button>
                 </div>
             </g:uploadForm>
         </g:elseif>
         <br>
-        <a href="${createLink(action: 'index',params: [courseId: params.courseId, userId: params.userId])}" class="btn btn-custom" style="text-decoration:none" role="button">Back</a>
+        <a href="${createLink(action: 'index',params: [courseId: params.courseId, userId: params.userId])}" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>
     </div>
 </body>
 </html>

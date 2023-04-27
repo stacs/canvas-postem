@@ -18,21 +18,21 @@
                                          "user" : choice
                                      },
                                     success: function(response){
-                                         let html = "";
-                                         let i = 0;
-                                         let headers = response["headers"];
-                                         let result = response[choice];
-                                         for (i = 0; i < result.length; i++) {
-                                             if(i == 0){
-                                                 html += "<strong>Student ID : </strong>" + result[0] + "</br>";
-                                                 html += "<strong>Student Name : </strong>" + result[1] + "," + result[2] + "</br>";
-                                                 i +=2;
-                                             }
-                                             else {
-                                                 html += "<strong>" + headers[i] + ": </strong>" + result[i] + "</br>";
-                                             }
-                                         }
-                                         $("#studentInfo").html(html);
+                                          let html = "";
+                                          let i = 0;
+                                          let headers = response["headers"];
+                                          let result = response[choice];
+                                          html += "<table class='table table-bordered' data-toggle='table'><thead style='background-color: #f5f5f5;'><tr>";
+                                          for (i = 0; i < headers.length; i++) {
+                                            html += "<th>" + headers[i] + "</th>";
+
+                                          }
+                                          html += "</tr></thead><tbody><tr>";
+                                          for (i = 0; i < result.length; i++) {
+                                                html += "<td>" + result[i] + "</td>";
+                                          }
+                                          html += "</tr></tbody></table>";
+                                          $("#studentInfo").html(html);
                                     }
                             });
                        }
@@ -52,9 +52,9 @@
           onchange="JavaScript:changeList('${fileURL}')" />
 
     </div>
-    <div id="output" style="padding-left:10px" aria-label="student information" tabindex="0" aria-describedby="studentInfo"><span id="studentInfo">
+    <div id="output" aria-label="student information" tabindex="0" aria-describedby="studentInfo" class="table_wrapper"><span id="studentInfo">
     </span></div>
     <br><br>
-    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom" style="text-decoration:none" role="button">Back</a>
+    <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>
 </body>
 </html>

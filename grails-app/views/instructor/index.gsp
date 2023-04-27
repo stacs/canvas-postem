@@ -25,6 +25,11 @@
             </g:each>
             return true;
         }
+        $(document).ready(function(){
+             var table = $('#feedbackTable').DataTable({
+                searching: false
+             });
+        });
     </script>
 </head>
 
@@ -77,13 +82,13 @@
                     <g:hiddenField name="userId" value="${params.userId}"/>
             </div>
             <div class="form-group">
-                <label for="myFile">Feedback File (CSV)</label><br/>
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('myFile').click(); return false;" aria-describedby="fileHelp" >Choose File</button>
+                <label for="myFile" id="choose">Feedback File (CSV)</label><br/>
+                <button type="button" class="btn btn-custom" onclick="document.getElementById('myFile').click(); return false;" aria-labelledby="choose">Choose File</button>
                 <input type="file" class="form-control-file" name="myFile" id="myFile" onchange="setFileName()" style="display: none;"/>
                 <label for="filename" class="hide">
                     Uploaded File
                 </label>
-                <input type="text" id="filename" autocomplete="off" readonly placeholder="No File Uploaded"><br/>
+                <input type="text" id="filename" autocomplete="off" readonly placeholder="No File Uploaded" aria-describedby="fileHelp"><br/>
                 <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB</small>
             </div>
             <div class="form-group">
@@ -91,23 +96,24 @@
                 <g:textField id="fileTitle" name="fileTitle"/>
             </div>
             <div class="form-group">
-                <label class="form-check-label">
+                <label>
                     <g:checkBox name="releaseCheckbox" value="${false}" />
                     Release feedback to participants?
                 </label>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-custom-dark">Upload</button>
             </div>
         </g:uploadForm>
-    <table class="table table-striped table-bordered table-responsive" id="feedbackTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
-        <thead>
+        <div class="table_wrapper">
+        <table class="table table-bordered" id="feedbackTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]"  data-sort-name="title" data-sort-order="asc">
+        <thead style="background-color: #f5f5f5;">
         <tr>
-            <th scope="col" data-sortable="true">Title</th>
-            <th scope="col" data-sortable="true">Modified By</th>
-            <th scope="col" data-sortable="true">Last Modified</th>
-            <th scope="col" data-sortable="true">Released</th>
-            <th scope="col" data-sortable="true">Actions</th>
+            <th scope="col" data-sortable="true" data-field="title">Title</th>
+            <th scope="col" data-sortable="true" data-field="modified by">Modified By</th>
+            <th scope="col" data-sortable="true" data-field="last modified">Last Modified</th>
+            <th scope="col" data-sortable="true" data-field="released">Released</th>
+            <th scope="col" data-sortable="true" data-field="actions">Actions</th>
         </tr></thead>
         <tbody>
         <g:each in="${courseFiles}" var="courseFile">
@@ -123,10 +129,10 @@
                     No
                     </g:else>
                 </td>
-                <td>
-                    <div class="dropup">
-                      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Action
+                <td style="width:200px">
+                    <div class="dropdown">
+                      <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Actions
                         <span class="caret"></span>
                       </button>
                       <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -136,10 +142,10 @@
                         <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'add', displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Upload New Version</a></li>
                         <li><a href="${createLink(controller: 'instructor', action: 'downloadCSV', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Download</a></li>
                         <g:if test="${courseFile.hidden == true}">
-                            <li><a href="${createLink(controller: 'instructor', action: 'unrelease', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId])}">Unrelease</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'unrelease', params: [fileId: courseFile.fileId, displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Unrelease</a></li>
                         </g:if>
                         <g:else>
-                            <li><a href="${createLink(controller: 'instructor', action: 'release', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId])}">Release</a></li>
+                            <li><a href="${createLink(controller: 'instructor', action: 'release', params: [fileId: courseFile.fileId, displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Release</a></li>
                         </g:else>
                         <li role="separator" class="divider"></li>
                         <li><a href="#fileModal_${courseFile.fileId}" data-toggle="modal" data-target="#fileModal_${courseFile.fileId}">Delete</a></li>
@@ -159,8 +165,8 @@
                                     <p class="mb-0" role="text">Are you sure you want to Delete ${courseFile.displayName}?</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="confirmDialog_confirm_${courseFile.fileId}_${params.courseId}_${params.userId}">Yes</button>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <a href="${createLink(action: 'delete', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId ])}" style="text-decoration:none" role="button" class="btn btn-custom-dark">Yes</a>
+                                    <button type="button" class="btn btn-custom-dark" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -170,5 +176,6 @@
         </g:each>
         </tbody>
     </table>
+    </div>
 </body>
 </html>
