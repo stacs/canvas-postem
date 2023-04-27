@@ -30,7 +30,7 @@ class InstructorController {
         parsedFileMap.remove('headers')
         def userMap = new HashMap()
         parsedFileMap.each { key, val ->
-            userMap.put(key, val[1] + "," + val[2] + "(" + val[0] + ")" )
+            userMap.put(key, val[1] + ", " + val[2] + " (" + val[0] + ")" )
         }
         def sortedMap = userMap.sort { it.value.toLowerCase() }
 
