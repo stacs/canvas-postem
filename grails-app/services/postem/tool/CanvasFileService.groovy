@@ -24,7 +24,7 @@ class CanvasFileService {
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
         def folderId = getFolderId(courseId)
-        def resp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/files'){
+        def resp = restClient.post(canvasBaseURL + '/api/v1/courses/' + courseId + '/files?as_user_id=' + userId){
             auth('Bearer ' + oauthToken)
             json{
                 name = fileName
@@ -70,15 +70,24 @@ class CanvasFileService {
             def resp = restClient.post(awsUploadResponse.headers.getLocation().toString()){
                 auth('Bearer ' + oauthToken)
             }
-            String fileId = resp.json.id
-            log.info("[" + grailsApplication.config.getProperty('grails.serverURL') +"] File Uploaded for Posted Feedback Tool by user " + userId + " in course " + courseId + ". File Details : Title = " + fileTitle + "," + " Id = " + fileId + "," + "location = " + awsUploadResponse.headers.getLocation().toString() )
+            if(resp.json.has("id")){
+                String fileId = resp.json.id
+                log.info("[" + grailsApplication.config.getProperty('grails.serverURL') +"] File Uploaded for Posted Feedback Tool by user " + userId + " in course " + courseId + ". File Details : display_name = " + resp.json.display_name + "," + " Id = " + fileId + "," + " size = " + resp.json.size + "," + "url = " + resp.json.url )
 
-            if(releaseFeedback){
-                hideFile(fileId, true)
+                if(releaseFeedback){
+                    hideFile(fileId, true)
+                }
+                else{
+                    hideFile(fileId, false)
+                }
+                return fileId
+
             }
             else{
-                hideFile(fileId, false)
+                log.error("[" + grailsApplication.config.getProperty('grails.serverURL') +"]" + "File Upload failed by user " + userId + " in course " + courseId +". File Title = " + fileTitle)
+                return -1
             }
+
         }
 
     }
@@ -145,7 +154,7 @@ class CanvasFileService {
         def canvasBaseURL = grailsApplication.config.getProperty('canvas.canvasBaseUrl')
         def oauthToken = grailsApplication.config.getProperty('canvas.oauthToken')
         List<File> fileList = new ArrayList<>()
-        def resp = restClient.get(canvasBaseURL + '/api/v1/folders/' + folderId + '/files?include[]=user'){
+        def resp = restClient.get(canvasBaseURL + '/api/v1/folders/' + folderId + '/files?include[]=user&sort=created_at&order=desc&per_page=100'){
             auth('Bearer ' + oauthToken)
         }
         populateFileList(resp, fileList)

@@ -24,12 +24,12 @@
                                           let result = response[choice];
                                           html += "<table class='table table-bordered' data-toggle='table'><thead style='background-color: #f5f5f5;'><tr>";
                                           for (i = 0; i < headers.length; i++) {
-                                            html += "<th>" + headers[i] + "</th>";
+                                            html += "<th scope='col'>" + headers[i] + "</th>";
 
                                           }
                                           html += "</tr></thead><tbody><tr>";
                                           for (i = 0; i < result.length; i++) {
-                                                html += "<td>" + result[i] + "</td>";
+                                                html += "<td scope='row'>" + result[i] + "</td>";
                                           }
                                           html += "</tr></tbody></table>";
                                           $("#studentInfo").html(html);

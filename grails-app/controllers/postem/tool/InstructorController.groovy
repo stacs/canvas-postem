@@ -71,8 +71,16 @@ class InstructorController {
                 if(params.releaseCheckbox == 'on'){
                     releaseFeedback = true
                 }
-                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
-                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded'])
+                def fileId = canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
+                if(fileId != -1){
+                    render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), user: params.user, courseId: params.courseId, userId: params.userId , status: 'success', description: fileTitle +' successfully uploaded'])
+                }
+                else{
+                    render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), user: params.user, courseId: params.courseId, userId: params.userId , status: 'error', description: fileTitle +' upload failed'])
+
+                }
+
+
             }
         }
 
@@ -99,8 +107,14 @@ class InstructorController {
                 if(params.releaseCheckbox == 'on'){
                     releaseFeedback = true
                 }
-                canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
-                render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), status: 'success', description: fileTitle +' successfully uploaded.'])
+                def fileId = canvasFileService.upload(f,true, releaseFeedback, courseId, fileTitle, params.userId)
+                if(fileId != -1){
+                    render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), user: params.user, courseId: params.courseId, userId: params.userId , status: 'success', description: fileTitle +' successfully uploaded'])
+                }
+                else{
+                    render(view: 'index', model: [courseFiles: canvasFileService.listFiles(courseId), user: params.user, courseId: params.courseId, userId: params.userId , status: 'error', description: fileTitle +' upload failed'])
+
+                }
             }
         }
 

@@ -11,11 +11,29 @@
                 $('#filenameNewVersion').attr('placeholder', filenameNewVersion);
                 $('#filenameNewVersion').focus();
             }
+            function checkEmptyFile()
+            {
+                if($('#myFile').val().length > 0){
+
+                    return true;
+                }
+                else{
+
+                    let html1 = '<div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">'
+                    html1 += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>'
+                    html1 += 'No file uploaded. Please upload a valid CSV file';
+                    html1 += '</strong><br></div>';
+                    $("#alerts_div2").html(html1);
+
+                    return false;
+                }
+
+            }
      </script>
 </head>
 
 <body>
-    <div class="form-group">
+    <div class="form-group" id="alerts_div2">
         <g:if test="${editType == 'rename'}">
             <g:form action="renameFile">
                 <g:hiddenField name="courseId" value="${params.courseId}"/>
@@ -28,13 +46,13 @@
             </g:form>
         </g:if>
         <g:elseif test="${editType == 'add'}">
-            <div class="alert alert-warning alert-dismissable">
+            <div class="alert alert-warning alert-dismissable" aria-live="assertive">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <strong>Warning: </strong>This file will overwrite and replace the existing file. Previous versions will not be saved.<br>
             </div>
             <g:if test="${status == 'error'}">
                 <g:if test="${badUsers && badUsers.size() > 0}">
-                    <div class="alert alert-danger alert-dismissable">
+                    <div class="alert alert-danger alert-dismissable" aria-live="assertive">
                         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                         <strong>Error - Invalid Users: Please correct the below rows and try again.</strong><br>
                         <ul style="padding-left:20px">
@@ -45,7 +63,7 @@
                     </div>
                 </g:if>
                 <g:else>
-                    <div class="alert alert-danger alert-dismissable">
+                    <div class="alert alert-danger alert-dismissable" aria-live="assertive">
                         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                         <strong><g:message code="${description}"/></strong><br>
                     </div>
@@ -53,19 +71,20 @@
             </g:if>
             <label>Add/Update Feedback</label><br>
             <a href="${createLink(controller: 'instructor', action: 'downloadFile', params: [courseId: params.courseId, userId: params.userId])}">Download your course template</a><br>
-            <g:uploadForm controller="instructor" action="uploadNewVersion">
+            <g:uploadForm controller="instructor" action="uploadNewVersion" onsubmit="return checkEmptyFile()">
                 <g:hiddenField name="courseId" value="${params.courseId}"/>
                 <g:hiddenField name="userId" value="${params.userId}"/>
+                <g:hiddenField name="user" value="${params.user}"/>
                 </div>
                 <div class="form-group">
-                    <label for="myFileNewVersion">Feedback File (CSV)</label><br/>
-                    <button type="button" class="btn btn-custom" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-describedby="fileHelpNewVersion" >Choose File</button>
+                    <label for="myFileNewVersion" id="choose2">Feedback File (CSV)</label><br/>
+                    <button id="uploadButton2" type="button" class="btn btn-custom" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-labelledby="choose2 uploadButton2" >Choose File</button>
                     <input type="file" class="form-control-file" name="myFileNewVersion" id="myFileNewVersion" onchange="setFileNameNewVersion()" style="display: none;"/>
                     <label for="filenameNewVersion" class="hide">
                         Uploaded File
                     </label>
-                    <input type="text" id="filenameNewVersion" autocomplete="off" readonly placeholder="No File Uploaded"><br/>
-                    <small id="fileHelpNewVersion" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB</small>
+                    <input type="text" id="filenameNewVersion" autocomplete="off" readonly placeholder="No File Uploaded" aria-labelledby="fileHelpNewVersion filenameNewVersion"><br/>
+                    <small id="fileHelpNewVersion" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB.</small>
                 </div>
                 <g:hiddenField name="fileTitle" value="${displayName}" />
                 <div class="form-group">

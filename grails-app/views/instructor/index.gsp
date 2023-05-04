@@ -5,30 +5,67 @@
     <script type="text/javascript">
         function setFileName()
         {
-            var theFile = document.getElementById('myFile');
-            var fileTitleText = document.getElementById('fileTitle');
-            fileTitleText.value = theFile.value.split(/[\/\\]/).pop().split('.')[0];
-
             var filename = $('#myFile').val().split('\\').pop();
+            $('#fileTitle').val($('#myFile').val().split(/[\/\\]/).pop().split('.')[0]);
             $('#filename').val(filename);
             $('#filename').attr('placeholder', filename);
             $('#filename').focus();
         }
         function checkExistingFile()
         {
-            var fileTitleText = document.getElementById('fileTitle');
-            <g:each in="${courseFiles}" var="courseFile">
-                var courseFileName = "${courseFile.displayName}";
-                if(fileTitleText.value == courseFileName){
-                    return confirm('Overwrite existing file?');
-                }
-            </g:each>
-            return true;
+            if($('#myFile').val().length > 0){
+
+                var fileTitleText = $('#fileTitle').val();
+                <g:each in="${courseFiles}" var="courseFile">
+                    var courseFileName = "${courseFile.displayName}";
+                    if(fileTitleText == courseFileName){
+                        return confirm('Overwrite existing file?');
+                    }
+                </g:each>
+
+                return true;
+            }
+            else{
+
+                let html1 = '<div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">'
+                html1 += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>'
+                html1 += 'No file uploaded. Please upload a valid CSV file';
+                html1 += '</strong><br></div>';
+                $("#alerts_div").html(html1);
+
+                return false;
+            }
+
+        }
+
+        function addAriaClasses(){
+
+             $('.paginate_button').each(function () {
+                    $(this).attr("aria-label", "Go to page " + $(this).text());
+             });
+
+             $('.page-link').each(function () {
+                   let attr = $(this).attr('aria-current');
+                   if (typeof attr !== 'undefined' && attr !== false) {
+                      $(this).attr("aria-label", "Page " + $(this).text() + ". Current Page. " + $("#feedbackTable_info").html());
+                   }
+             })
+
+             $("#feedbackTable_previous").attr("aria-label", "Go to previous page");
+             $("#feedbackTable_next").attr("aria-label", "Go to next page");
         }
         $(document).ready(function(){
              var table = $('#feedbackTable').DataTable({
-                searching: false
+                searching: false,
+                initComplete: function(settings, json) {
+                  addAriaClasses();
+                }
              });
+
+             $('#feedbackTable').on( 'draw.dt', function () {
+                addAriaClasses();
+             } );
+
         });
     </script>
 </head>
@@ -49,10 +86,10 @@
             </div>
         </div>
     </div>
-            <div class="form-group">
+            <div class="form-group" id="alerts_div">
                 <g:if test="${status == 'error'}">
                     <g:if test="${badUsers && badUsers.size() > 0}">
-                        <div class="alert alert-danger alert-dismissable" role="alert">
+                        <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             <strong>Error - Invalid Users: Please correct the below rows and try again.</strong><br>
                             <ul style="padding-left:20px">
@@ -63,33 +100,34 @@
                         </div>
                     </g:if>
                     <g:else>
-                        <div class="alert alert-danger alert-dismissable" role="alert">
+                        <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             <strong><g:message code="${description}"/></strong><br>
                         </div>
                     </g:else>
                 </g:if>
                 <g:elseif test="${status == 'success'}">
-                    <div class="alert alert-success alert-dismissable" role="alert">
+                    <div class="alert alert-success alert-dismissable" role="alert" aria-live="assertive">
                         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                         <strong><g:message code="${description}"/></strong><br>
                     </div>
                 </g:elseif>
                 <h2>Add/Update Feedback</h2>
                 <a href="${createLink(controller: 'instructor', action: 'downloadFile', params: [courseId: params.courseId, userId: params.userId])}">Download your course template</a><br>
-                <g:uploadForm controller="instructor" action="upload" onsubmit="return checkExistingFile()">
-                    <g:hiddenField name="courseId" value="${params.courseId}"/>
-                    <g:hiddenField name="userId" value="${params.userId}"/>
             </div>
+        <g:uploadForm controller="instructor" action="upload" onsubmit="return checkExistingFile()">
+            <g:hiddenField name="courseId" value="${params.courseId}"/>
+            <g:hiddenField name="userId" value="${params.userId}"/>
+            <g:hiddenField name="user" value="${params.user}"/>
             <div class="form-group">
                 <label for="myFile" id="choose">Feedback File (CSV)</label><br/>
-                <button type="button" class="btn btn-custom" onclick="document.getElementById('myFile').click(); return false;" aria-labelledby="choose">Choose File</button>
+                <button id="uploadButton" type="button" class="btn btn-custom" onclick="document.getElementById('myFile').click(); return false;" aria-labelledby="choose uploadButton">Choose File</button>
                 <input type="file" class="form-control-file" name="myFile" id="myFile" onchange="setFileName()" style="display: none;"/>
                 <label for="filename" class="hide">
                     Uploaded File
                 </label>
-                <input type="text" id="filename" autocomplete="off" readonly placeholder="No File Uploaded" aria-describedby="fileHelp"><br/>
-                <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB</small>
+                <input type="text" id="filename" autocomplete="off" readonly placeholder="No File Uploaded" aria-labelledby="fileHelp filename"><br/>
+                <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB.</small>
             </div>
             <div class="form-group">
                 <label for="fileTitle">Title</label><br>
@@ -106,7 +144,7 @@
             </div>
         </g:uploadForm>
         <div class="table_wrapper">
-        <table class="table table-bordered" id="feedbackTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]"  data-sort-name="title" data-sort-order="asc">
+        <table class="table table-bordered" id="feedbackTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-sort-name="title" data-sort-order="asc">
         <thead style="background-color: #f5f5f5;">
         <tr>
             <th scope="col" data-sortable="true" data-field="title">Title</th>
@@ -119,9 +157,9 @@
         <g:each in="${courseFiles}" var="courseFile">
             <tr>
                 <td scope="row">${courseFile.displayName}</td>
-                <td>${courseFile.modifiedBy}</td>
-                <td>${courseFile.updatedAt}</td>
-                <td>
+                <td scope="row">${courseFile.modifiedBy}</td>
+                <td scope="row">${courseFile.updatedAt}</td>
+                <td scope="row">
                     <g:if test="${courseFile.hidden == true}">
                     Yes
                     </g:if>
@@ -129,7 +167,7 @@
                     No
                     </g:else>
                 </td>
-                <td style="width:200px">
+                <td style="width:200px" scope="row">
                     <div class="dropdown">
                       <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Actions

@@ -741,3 +741,8 @@ div.dataTables_wrapper {
  .text-muted {
      color: #000!important;
  }
+
+ input:focus-visible, select:focus-visible {
+     outline: 2px solid grey;
+     border-radius: 3px;
+ }

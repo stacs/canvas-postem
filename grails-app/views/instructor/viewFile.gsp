@@ -3,12 +3,34 @@
 <head>
     <meta name="layout" content="main"/>
     <script type="text/javascript">
+             function addAriaClasses(){
+
+                 $('.paginate_button').each(function () {
+                        $(this).attr("aria-label", "Go to page " + $(this).text());
+                 });
+
+                 $('.page-link').each(function () {
+                       let attr = $(this).attr('aria-current');
+                       if (typeof attr !== 'undefined' && attr !== false) {
+                          $(this).attr("aria-label", "Page " + $(this).text() + ". Current Page. " + $("#studentViewTable_info").html());
+                       }
+                 })
+
+                 $("#studentViewTable_previous").attr("aria-label", "Go to previous page");
+                 $("#studentViewTable_next").attr("aria-label", "Go to next page");
+            }
             $(document).ready(function(){
                  var table = $('#studentViewTable').DataTable({
                          fixedColumns:   {
                              left: 1
+                         },
+                         initComplete: function(settings, json) {
+                           addAriaClasses();
                          }
                  });
+                 $('#studentViewTable').on( 'draw.dt', function () {
+                     addAriaClasses();
+                  } );
             });
         </script>
 </head>
@@ -45,12 +67,12 @@
                     <g:if test="${userActivity.any {it.loginId == loginId}}">
                         <g:each in="${userActivity}" var="activity">
                             <g:if test="${activity.loginId == loginId}">
-                                <td>${activity.lastViewed}</td>
+                                <td scope="row">${activity.lastViewed}</td>
                             </g:if>
                         </g:each>
                     </g:if>
                     <g:else>
-                        <td>Never</td>
+                        <td scope="row">Never</td>
                     </g:else>
                 </tr>
             </g:each>
