@@ -667,7 +667,7 @@ div.dataTables_wrapper {
  .btn-custom, .btn-custom:hover {
      color: #000;
      background-color: #f5f5f5;
-     border-color: #f5f5f5;
+     border-color: #666;
  }
 
  .btn-custom-dark, .btn-custom-dark:hover {
@@ -688,13 +688,13 @@ div.dataTables_wrapper {
  }
 
  a {
-     color: #007bff;
+     color: #0645ad;
      text-decoration: underline;
      font-weight: 500;
  }
 
  a:hover {
-     color: #007bff;
+     color: #0645ad;
      text-decoration: none
  }
 
@@ -712,21 +712,21 @@ div.dataTables_wrapper {
  }
 
  .page-item.active .page-link {
-     background-color: #007bff;
-     border: 3px solid #007bff;
-     color: #fff;
+     background-color: #0645ad !important;
+     color: #fff !important;
  }
 
 .page-link {
-     border: 1px solid #ddd;
+     border: 1px solid #999;
      font-weight: 500;
+     color: #0645ad !important;
 }
  .dropdown-menu > li > a {
      padding: 5px 20px;
      clear: both;
      font-weight: 500;
      line-height: 1.5;
-     color: #000;
+     color: #0645ad;
      white-space: nowrap;
  }
 
@@ -789,4 +789,8 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
   max-width: 500px;
   word-break: break-all;
   line-height: 3;
+}
+
+.custom-select {
+    border: 1px solid #666 !important;
 }
