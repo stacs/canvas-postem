@@ -14,6 +14,10 @@
                        if (typeof attr !== 'undefined' && attr !== false) {
                           $(this).attr("aria-label", "Page " + $(this).text() + ". Current Page. " + $("#studentViewTable_info").html());
                        }
+                       let attr2 = $(this).attr('aria-disabled');
+                       if (typeof attr2 !== 'undefined' && attr2 !== false) {
+                            $(this).attr("tabindex", "-1");
+                       }
                  })
 
                  $("#studentViewTable_previous").attr("aria-label", "Go to previous page");
@@ -58,21 +62,21 @@
                     <g:each in="${content}" var="contentRow">
                         <g:if test="${num++ == 1}">
                             <g:set var="loginId" value="${contentRow}"/>
-                            <td class="${(userActivity.any {it.loginId == loginId}) ? '' : 'success'}" scope="row">${contentRow}</td>
+                            <th class="${(userActivity.any {it.loginId == loginId}) ? '' : 'success'}" scope="row">${contentRow}</th>
                         </g:if>
                         <g:else>
-                            <td scope="row">${contentRow}</td>
+                            <td>${contentRow}</td>
                         </g:else>
                     </g:each>
                     <g:if test="${userActivity.any {it.loginId == loginId}}">
                         <g:each in="${userActivity}" var="activity">
                             <g:if test="${activity.loginId == loginId}">
-                                <td scope="row">${activity.lastViewed}</td>
+                                <td>${activity.lastViewed}</td>
                             </g:if>
                         </g:each>
                     </g:if>
                     <g:else>
-                        <td scope="row">Never</td>
+                        <td>Never</td>
                     </g:else>
                 </tr>
             </g:each>

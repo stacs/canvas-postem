@@ -49,6 +49,11 @@
                    if (typeof attr !== 'undefined' && attr !== false) {
                       $(this).attr("aria-label", "Page " + $(this).text() + ". Current Page. " + $("#feedbackTable_info").html());
                    }
+
+                   let attr2 = $(this).attr('aria-disabled');
+                   if (typeof attr2 !== 'undefined' && attr2 !== false) {
+                     $(this).attr("tabindex", "-1");
+                  }
              })
 
              $("#feedbackTable_previous").attr("aria-label", "Go to previous page");
@@ -154,12 +159,12 @@
             <th scope="col" data-sortable="true" data-field="actions">Actions</th>
         </tr></thead>
         <tbody>
-        <g:each in="${courseFiles}" var="courseFile">
+        <g:each status="i" in="${courseFiles}" var="courseFile">
             <tr>
-                <td scope="row">${courseFile.displayName}</td>
-                <td scope="row">${courseFile.modifiedBy}</td>
-                <td scope="row">${courseFile.updatedAt}</td>
-                <td scope="row">
+                <th scope="row">${courseFile.displayName}</th>
+                <td>${courseFile.modifiedBy}</td>
+                <td>${courseFile.updatedAt}</td>
+                <td>
                     <g:if test="${courseFile.hidden == true}">
                     Yes
                     </g:if>
@@ -167,13 +172,13 @@
                     No
                     </g:else>
                 </td>
-                <td style="width:200px" scope="row">
+                <td style="width:200px">
                     <div class="dropdown">
-                      <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenu${i}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Actions
                         <span class="caret"></span>
                       </button>
-                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu${i}">
                         <li><a href="${createLink(controller: 'instructor', action: 'viewFile', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, released: !courseFile.hidden, courseId: params.courseId, userId: params.userId])}">View</a></li>
                         <li><a href="${createLink(controller: 'instructor', action: 'studentView', params: [fileId: courseFile.fileId, fileURL: courseFile.url, displayName: courseFile.displayName, released: !courseFile.hidden, courseId: params.courseId, user: params.user, userId: params.userId])}">Student View</a></li>
                         <li><a href="${createLink(controller: 'instructor', action: 'editFile', params: [fileId: courseFile.fileId, editType: 'rename', displayName: courseFile.displayName, courseId: params.courseId, userId: params.userId])}">Edit Title</a></li>
@@ -199,8 +204,8 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
-                                    <p class="mb-0" role="text">Are you sure you want to Delete ${courseFile.displayName}?</p>
+                                <div class="modal-body" role="text">
+                                  Are you sure you want to Delete ${courseFile.displayName}?
                                 </div>
                                 <div class="modal-footer">
                                     <a href="${createLink(action: 'delete', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId ])}" style="text-decoration:none" role="button" class="btn btn-custom-dark">Yes</a>

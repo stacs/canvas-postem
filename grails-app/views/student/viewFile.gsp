@@ -18,7 +18,7 @@
             <g:each in="${contents}" var="content">
                 <tr>
                     <g:each in="${content}" var="contentRow">
-                        <td scope="row">${contentRow}</td>
+                        <td>${contentRow}</td>
                     </g:each>
                 </tr>
             </g:each>

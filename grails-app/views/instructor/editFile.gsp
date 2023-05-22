@@ -42,7 +42,7 @@
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">Current Title: <g:field type="text" name="currentName" disabled="true" value="${displayName}"/></label><br>
                 <label style="display: inline-block; float: left; clear: left; width: 300px; text-align: right">New Title:     <g:textField name="fileName"/></label><br><br>
                 <g:hiddenField name="fileId" value="${fileId}" />
-                <input style="margin-left: 230px" type="submit" class="btn btn-custom-dark" value="Submit">
+                <button type="submit" class="btn btn-custom-dark" style="margin-left: 150px">Update</button>
             </g:form>
         </g:if>
         <g:elseif test="${editType == 'add'}">

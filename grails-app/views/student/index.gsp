@@ -28,9 +28,9 @@
     <tbody>
     <g:each in="${courseFiles}" var="courseFile">
         <tr>
-            <td scope="row">${courseFile.displayName}</td>
-            <td scope="row">${courseFile.updatedAt}</td>
-            <td scope="row">
+            <th scope="row">${courseFile.displayName}</th>
+            <td>${courseFile.updatedAt}</td>
+            <td>
                 <a href="${createLink(action: 'viewFile', params: [fileURL: courseFile.url, fileId: courseFile.fileId, courseId: params.courseId, user: params.user ])}" style="text-decoration:none" role="button" class="btn btn-custom">View</a>
             </td>
         </tr>

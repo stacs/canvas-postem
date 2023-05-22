@@ -29,7 +29,7 @@
                                           }
                                           html += "</tr></thead><tbody><tr>";
                                           for (i = 0; i < result.length; i++) {
-                                                html += "<td scope='row'>" + result[i] + "</td>";
+                                                html += "<td>" + result[i] + "</td>";
                                           }
                                           html += "</tr></tbody></table>";
                                           $("#studentInfo").html(html);
@@ -42,7 +42,7 @@
 
 <body>
     <div class="panel panel-default">
-        <div class="panel-heading"><label>View Student in ${displayName}</label></div>
+        <div class="panel-heading"><strong>View Student in ${displayName}</strong></div>
     </div>
     <div class="form-group">
         <label for="participantselect">Select a Student</label>
