@@ -784,8 +784,6 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
 }
 
 .modal-title {
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
   line-height: 3;
 }
 
