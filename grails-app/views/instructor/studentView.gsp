@@ -6,7 +6,8 @@
                 function changeList(fileURL) {
                        var choice = document.getElementById('participantselect').value;
                        if(choice == 'null'){
-                           $("#studentInfo").html("No Student is selected");
+                          $("#headContent").html("");
+                          $("#bodyContent").html("");
                        }
                        else{
                             $.ajax({
@@ -22,17 +23,23 @@
                                           let i = 0;
                                           let headers = response["headers"];
                                           let result = response[choice];
-                                          html += "<table class='table table-bordered' data-toggle='table'><thead style='background-color: #f5f5f5;'><tr>";
+                                          html = "";
                                           for (i = 0; i < headers.length; i++) {
-                                            html += "<th scope='col'>" + headers[i] + "</th>";
+                                            html += "<th scope='col' tabIndex='1'>" + headers[i] + "</th>";
 
                                           }
-                                          html += "</tr></thead><tbody><tr>";
+                                          $("#headContent").html(html);
+                                          html = "";
                                           for (i = 0; i < result.length; i++) {
-                                                html += "<td>" + result[i] + "</td>";
+                                                if(i == 0){
+                                                    html += "<th scope='row' tabIndex='1'>" + result[i] + "</th>";
+                                                }
+                                                else{
+                                                    html += "<td tabIndex='1'>" + result[i] + "</td>";
+                                                }
+
                                           }
-                                          html += "</tr></tbody></table>";
-                                          $("#studentInfo").html(html);
+                                          $("#bodyContent").html(html);
                                     }
                             });
                        }
@@ -52,7 +59,14 @@
           onchange="JavaScript:changeList('${fileURL}')" />
 
     </div>
-    <div id="output" aria-label="student information" tabindex="0" aria-describedby="studentInfo" class="table_wrapper"><span id="studentInfo">
+    <div class="table_wrapper" tabIndex="1">
+    <table class="table table-bordered" id="studentTableInstructorView" data-toggle="table"  data-smart-display="true" tabIndex="1">
+    <thead style='background-color: #f5f5f5;'><tr id="headContent">
+
+    </tr></thead><tbody><tr id="bodyContent">
+
+
+    </tr></tbody></table>
     </span></div>
     <br><br>
     <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>

@@ -46,7 +46,7 @@
             Below are your students and the feedback you provided in this file.  Use the search box below to look for a specific student.
         </div>
     </div>
-    <table class="table table-bordered" id="studentViewTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-page-list="[5, 10, 20, 50, 100, All]">
+    <table class="table table-bordered" id="studentViewTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-sort-name="title" data-sort-order="asc">
         <thead style="background-color: #f5f5f5;">
             <tr>
                 <g:each in="${headers}" var="header">

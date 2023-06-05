@@ -17,7 +17,7 @@
 
 <body>
 <div class="table_wrapper">
-<table class="table table-bordered" id="studentTable" data-toggle="table" >
+<table class="table table-bordered" id="studentTable" data-toggle="table"  data-smart-display="true">
         <thead style="background-color: #f5f5f5;">
     <tr>
         <th scope="col">Title</th>

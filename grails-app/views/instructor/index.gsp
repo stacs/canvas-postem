@@ -194,12 +194,12 @@
                         <li><a href="#fileModal_${courseFile.fileId}" data-toggle="modal" data-target="#fileModal_${courseFile.fileId}">Delete</a></li>
                       </ul>
                     </div>
-
+                    <div style='display:none' id="fileModalMessage_${courseFile.fileId}"> Are you sure you want to Delete ${courseFile.displayName}? Yes </div>
                     <div id="fileModal_${courseFile.fileId}" class="modal fade" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
+                        <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Confirm Delete ${courseFile.displayName}</h5>
+                                    <h5 class="modal-title">Confirm Delete File</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
@@ -208,7 +208,7 @@
                                   Are you sure you want to Delete ${courseFile.displayName}?
                                 </div>
                                 <div class="modal-footer">
-                                    <a href="${createLink(action: 'delete', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId ])}" style="text-decoration:none" role="button" class="btn btn-custom-dark">Yes</a>
+                                    <a href="${createLink(action: 'delete', params: [fileId: courseFile.fileId, courseId: params.courseId, userId: params.userId ])}" style="text-decoration:none" role="button" class="btn btn-custom-dark" aria-labelledby="fileModalMessage_${courseFile.fileId} ">Yes</a>
                                     <button type="button" class="btn btn-custom-dark" data-dismiss="modal">Close</button>
                                 </div>
                             </div>

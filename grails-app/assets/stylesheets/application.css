@@ -778,16 +778,14 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
 .modal-body {
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
-  max-width: 500px;
-  word-break: break-all;
+  min-width: 500px;
+  overflow-wrap: break-word;
   line-height: 3;
 }
 
 .modal-title {
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
-  max-width: 500px;
-  word-break: break-all;
   line-height: 3;
 }
 
