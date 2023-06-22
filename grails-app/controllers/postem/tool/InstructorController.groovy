@@ -7,6 +7,7 @@ class InstructorController {
 
     def canvasFileService
     def CSVService
+    def CanvasUserService
 
     def index() {
         String courseId = params.courseId
@@ -30,7 +31,8 @@ class InstructorController {
         parsedFileMap.remove('headers')
         def userMap = new HashMap()
         parsedFileMap.each { key, val ->
-            userMap.put(key, val[1] + ", " + val[2] + " (" + val[0] + ")" )
+            def displayName = CanvasUserService.getUserDisplayName(val[0], params.courseId)
+            userMap.put(key, displayName + " (" + val[0] + ")" )
         }
         def sortedMap = userMap.sort { it.value.toLowerCase() }
 

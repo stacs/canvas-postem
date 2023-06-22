@@ -219,6 +219,7 @@
         </g:each>
         </tbody>
     </table>
+    <br/><br/>
     </div>
 </body>
 </html>

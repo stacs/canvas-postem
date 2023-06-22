@@ -46,6 +46,7 @@
             Below are your students and the feedback you provided in this file.  Use the search box below to look for a specific student.
         </div>
     </div>
+    <div class="table_wrapper" tabIndex="1">
     <table class="table table-bordered" id="studentViewTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-sort-name="title" data-sort-order="asc">
         <thead style="background-color: #f5f5f5;">
             <tr>
@@ -82,7 +83,7 @@
             </g:each>
 
         </tbody>
-    </table>
+    </table></div>
     <br><br>
     <a href="${createLink(action: 'index', params: [courseId: courseId, userId: userId  ])}" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>
 

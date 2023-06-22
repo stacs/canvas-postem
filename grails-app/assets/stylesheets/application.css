@@ -773,6 +773,8 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
 
 .table thead th {
     background-color: white !important;
+    white-space: normal !important;
+    /*word-wrap: break-word;*/
 }
 
 .modal-body {
@@ -790,3 +792,11 @@ table.dataTable thead>tr>th.sorting:before, table.dataTable thead>tr>th.sorting:
 .custom-select {
     border: 1px solid #666 !important;
 }
+
+td {
+  white-space: normal !important;
+  /*word-wrap: break-word;*/
+}
+/*table {
+  table-layout: fixed;
+}*/
