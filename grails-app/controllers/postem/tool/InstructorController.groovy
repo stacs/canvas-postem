@@ -30,9 +30,15 @@ class InstructorController {
         def parsedFileMap = CSVService.parseFile(fileURL)
         parsedFileMap.remove('headers')
         def userMap = new HashMap()
+        def courseUsersMap = CanvasUserService.getUsersOfCourse(params.courseId)
         parsedFileMap.each { key, val ->
-            def displayName = CanvasUserService.getUserDisplayName(val[0], params.courseId)
-            userMap.put(key, displayName + " (" + val[0] + ")" )
+            if(courseUsersMap.containsKey(val[0])){
+                userMap.put(key, courseUsersMap.get(val[0]) + " (" + val[0] + ")" )
+            }
+            else{
+                userMap.put(key,  " (" + val[0] + ")" )
+            }
+
         }
         def sortedMap = userMap.sort { it.value.toLowerCase() }
 
