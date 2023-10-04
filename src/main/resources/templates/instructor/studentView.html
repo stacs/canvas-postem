@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <script type="text/javascript">
+                function changeList(fileId) {
+                       var choice = document.getElementById('participantselect').value;
+                       if(choice == 'null'){
+                          $("#headContent").html("");
+                          $("#bodyContent").html("");
+                       }
+                       else{
+                            $.ajax({
+                                    method: "GET",
+                                    dataType: "json",
+                                    url: "/lts-postem-v2/studentFileInfo",
+                                    data: {
+                                         "fileId" : fileId,
+                                         "user" : choice
+                                     },
+                                    success: function(response){
+
+                                          let html = "";
+                                          let i = 0;
+                                          let headers = response["headers"];
+                                          let result = response[choice];
+                                          html = "";
+                                          for (i = 0; i < headers.length; i++) {
+                                            html += "<th scope='col' tabIndex='1'>" + headers[i] + "</th>";
+
+                                          }
+                                          $("#headContent").html(html);
+                                          html = "";
+                                          for (i = 0; i < result.length; i++) {
+                                                if(i == 0){
+                                                    html += "<th scope='row' tabIndex='1'>" + result[i] + "</th>";
+                                                }
+                                                else{
+                                                    html += "<td tabIndex='1'>" + result[i] + "</td>";
+                                                }
+
+                                          }
+                                          $("#bodyContent").html(html);
+                                    }
+                            });
+                       }
+                }
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="panel panel-default">
+        <div class="panel-heading"><strong>View Student in <span th:text="${displayName}"/></strong></div>
+    </div>
+    <div class="form-group">
+        <!--noSelection="${['null': 'Please Choose...']}" TODO-->
+        <label for="participantselect">Select a Student</label>
+        <select id="participantselect" name="participantchoice"
+                th:attr="onchange=|JavaScript:changeList('${fileId}')|" >
+            <option th:each="login : ${logins}" th:value="${login.key}" th:text="${login.value}"></option>
+        </select>
+
+    </div>
+    <div class="table_wrapper" tabIndex="1">
+    <table class="table table-bordered" id="studentTableInstructorView" data-toggle="table"  data-smart-display="true" tabIndex="1">
+    <thead style='background-color: #f5f5f5;'><tr id="headContent">
+
+    </tr></thead><tbody><tr id="bodyContent">
+
+
+    </tr></tbody></table>
+    </span></div>
+    <br><br>
+    <a th:href="@{'/instructorHome' }" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+     <script type="text/javascript">
+            function setFileNameNewVersion()
+            {
+                var theFileNewVersion = document.getElementById('myFileNewVersion');
+                var filenameNewVersion = $('#myFileNewVersion').val().split('\\').pop();
+                $('#filenameNewVersion').val(filenameNewVersion);
+                $('#filenameNewVersion').attr('placeholder', filenameNewVersion);
+                $('#filenameNewVersion').focus();
+            }
+            function checkEmptyFile()
+            {
+                if($('#myFile').val().length > 0){
+
+                    return true;
+                }
+                else{
+
+                    let html1 = '<div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">'
+                    html1 += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>'
+                    html1 += 'No file uploaded. Please upload a valid CSV file';
+                    html1 += '</strong><br></div>';
+                    $("#alerts_div2").html(html1);
+
+                    return false;
+                }
+
+            }
+     </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="form-group" id="alerts_div2">
+        <br/>
+        <form th:action="@{/renameFile}" th:if="${ editType == 'rename' }" method="post">
+            <div class="form-group">
+                <label for="currentName">Current Title:</label>
+                <input type="text" class="col-sm-6 form-control" id="currentName" name="currentName" disabled="true" th:attr="value = ${displayName}" />
+            </div>
+            <input type="hidden" name="fileId" th:value="${fileId}" />
+            <div class="form-group">
+                <label for="fileName">New Title:</label>
+                <input type="text" class="col-sm-6 form-control" name="fileName" id="fileName" />
+            </div>
+            <button type="submit" class="btn btn-custom-dark">Update</button>
+        </form>
+
+        <div th:if="${ editType == 'add' }" >
+            <div class="alert alert-warning alert-dismissable" aria-live="assertive">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Warning: </strong>This file will overwrite and replace the existing file. Previous versions will not be saved.<br>
+            </div>
+            <div class="alert alert-danger alert-dismissable" aria-live="assertive" th:if="${ status == 'error' AND badUsers AND badUsers.size() > 0 }">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong>Error - Invalid Users: Please correct the below rows and try again.</strong><br>
+                <ul style="padding-left:20px">
+                    <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
+                </ul>
+            </div>
+            <div class="alert alert-danger alert-dismissable" aria-live="assertive" th:if="${ status == 'error' AND (!badUsers OR badUsers.size() == 0) }">
+                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                <strong><span th:text="${description}" /></strong><br>
+            </div>
+            <label>Add/Update Feedback</label><br>
+            <a th:href="@{'/downloadFile' }" >Download your course template</a><br>
+            <form th:action="@{/uploadNewVersion}" onsubmit="return checkEmptyFile()" method="post" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label for="myFileNewVersion" id="choose2">Feedback File (CSV)</label><br/>
+                    <button id="uploadButton2" type="button" class="btn btn-custom" onclick="document.getElementById('myFileNewVersion').click(); return false;" aria-labelledby="choose2 uploadButton2" >Choose File</button>
+                    <input type="file" class="form-control-file" name="myFileNewVersion" id="myFileNewVersion" onchange="setFileNameNewVersion()" style="display: none;"/>
+                    <label for="filenameNewVersion" class="hide">
+                        Uploaded File
+                    </label>
+                    <input type="text" id="filenameNewVersion" autocomplete="off" readonly placeholder="No File Uploaded" aria-labelledby="fileHelpNewVersion filenameNewVersion"><br/>
+                    <small id="fileHelpNewVersion" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB.</small>
+                </div>
+                <input type="hidden" name="fileTitle" th:value="${displayName}" />
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="releaseCheckbox" />
+                        Release feedback to participants?
+                    </label>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-custom-dark">Upload</button>
+                </div>
+            </form>
+        </div>
+        <br>
+        <a th:href="@{'/instructorHome' }"  role="button" class="btn btn-custom-dark">Back</a>
+    </div>
+</div>
+</body>
+</html>

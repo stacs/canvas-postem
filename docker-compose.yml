@@ -1,8 +1,8 @@
 version: '3.0'
 services:
 
-  postemapp:
-    image: lts_postem
+  postem:
+    image: lts-postem
     build:
       context: .
       dockerfile: Dockerfile
