@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <script type="text/javascript">
+    <script type="text/javascript" th:inline="javascript">
         function setFileName()
         {
             var filename = $('#myFile').val().split('\\').pop();
@@ -14,13 +14,18 @@
         {
             if($('#myFile').val().length > 0){
 
-                /*var fileTitleText = $('#fileTitle').val();
-                var theList = [[${courseFiles}]];
-                for (i = 0; i < theList.length; i++) {
-                    if(fileTitleText == theList[i].displayName){
+                 var fileTitleText = $('#fileTitle').val();
+
+                 /*<![CDATA[*/
+
+                 var courseFiles1 =  /*[[${courseFiles}]]*/;
+                 for(let i=0; i<courseFiles1.length; i++){
+                    if(fileTitleText == courseFiles1[i].displayName){
                         return confirm('Overwrite existing file?');
                     }
-                }*/
+                 }
+
+                /*]]>*/
 
                 return true;
             }

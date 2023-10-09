@@ -13,8 +13,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "user_file_view_log")
 public class UserFileViewLog {
 
-  @EmbeddedId private UserFileViewLogId id;
+  @Id
+  @Column(nullable = false, updatable = false)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  @Column(nullable = false)
+  @Column(name = "login_id", nullable = false)
+  private String loginId;
+
+  @Column(name = "file_id", nullable = false)
+  private String fileId;
+
+  @Column(name = "last_viewed", nullable = false)
   private OffsetDateTime lastViewed;
 }

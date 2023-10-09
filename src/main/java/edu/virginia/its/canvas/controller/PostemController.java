@@ -125,7 +125,7 @@ public class PostemController {
     String userId = token.getCustomValue(Constants.CANVAS_USER_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
 
-    ArrayList<UserFileViewLog> userActivity = userFileViewLogRepository.findAllByIdFileId(fileId);
+    ArrayList<UserFileViewLog> userActivity = userFileViewLogRepository.findAllByFileId(fileId);
     CanvasData.File file = canvasFileService.fetchFile(Long.parseLong(fileId), timeZone);
     HashMap<String, String[]> parsedFileMap = canvasFileService.parseFile(file.url());
     String[] headerArray = parsedFileMap.get("headers");
@@ -135,7 +135,7 @@ public class PostemController {
     userActivity.stream()
         .forEach(
             activity -> {
-              activityMap.put(activity.getId().getLoginId(), activity);
+              activityMap.put(activity.getLoginId(), activity);
             });
 
     model.addAttribute("headers", headerArray);
@@ -523,7 +523,7 @@ public class PostemController {
 
     CanvasData.File file = canvasFileService.fetchFile(Long.parseLong(fileId), timeZone);
 
-    ArrayList<UserFileViewLog> userActivity = userFileViewLogRepository.findAllByIdFileId(fileId);
+    ArrayList<UserFileViewLog> userActivity = userFileViewLogRepository.findAllByFileId(fileId);
     Map<String, String[]> parsedFileMap = canvasFileService.parseFile(file.url());
 
     HttpHeaders header = new HttpHeaders();
@@ -547,7 +547,7 @@ public class PostemController {
             String columnData = Arrays.stream(value).collect(Collectors.joining(","));
             boolean activityFound = false;
             for (UserFileViewLog activity : userActivity) {
-              if (activity.getId().getLoginId().equalsIgnoreCase(key)) {
+              if (activity.getLoginId().equalsIgnoreCase(key)) {
                 activityFound = true;
                 columnData += "," + activity.getLastViewed().toString() + "\n";
               }
@@ -649,14 +649,14 @@ public class PostemController {
     CanvasData.File file = canvasFileService.fetchFile(Long.parseLong(fileId), timeZone);
 
     // log user viewing file
-    UserFileViewLog lastViewed = userFileViewLogRepository.findByIdFileIdAndIdLoginId(fileId, user);
+    UserFileViewLog lastViewed = userFileViewLogRepository.findByFileIdAndLoginId(fileId, user);
     if (lastViewed != null) {
       lastViewed.setLastViewed(OffsetDateTime.now());
     } else {
       lastViewed = new UserFileViewLog();
       lastViewed.setLastViewed(OffsetDateTime.now());
-      lastViewed.getId().setFileId(fileId);
-      lastViewed.getId().setLoginId(user);
+      lastViewed.setFileId(fileId);
+      lastViewed.setLoginId(user);
     }
     userFileViewLogRepository.saveAndFlush(lastViewed);
 
