@@ -200,7 +200,7 @@ public class PostemController {
   }
 
   @GetMapping("/studentFileInfo")
-  public ResponseEntity<?> studentFileInfo(@RequestParam String fileId) {
+  public ResponseEntity<?> studentFileInfo(@RequestParam String fileId, @RequestParam String user) {
 
     CanvasAuthenticationToken token;
 
@@ -214,7 +214,6 @@ public class PostemController {
     }
 
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
-    String user = token.getCustomValue(Constants.CANVAS_USER);
 
     CanvasData.File file = canvasFileService.fetchFile(Long.parseLong(fileId), timeZone);
     HashMap<String, String[]> response = canvasFileService.parseFileForUser(file.url(), user);
@@ -272,6 +271,10 @@ public class PostemController {
 
     ArrayList<String> users = canvasFileService.listUserLogins(courseId);
 
+    model.addAttribute("user", user);
+    model.addAttribute("courseId", courseId);
+    model.addAttribute("userId", userId);
+
     if (!canvasFileService.isCSVFile(myFile)) {
 
       model.addAttribute("status", "error");
@@ -289,6 +292,9 @@ public class PostemController {
       if (badUsers.size() > 0) {
         model.addAttribute("status", "error");
         model.addAttribute("badUsers", badUsers);
+        model.addAttribute(
+            "description",
+            messageSource.getMessage("error.invalidusers", null, LocaleContextHolder.getLocale()));
 
       } else {
         fileTitle = fileTitle + ".csv";
@@ -299,19 +305,11 @@ public class PostemController {
         long fileId =
             canvasFileService.upload(myFile, true, releaseFeedback, courseId, fileTitle, userId);
         if (fileId != -1) {
-
-          model.addAttribute("user", user);
-          model.addAttribute("courseId", courseId);
-          model.addAttribute("userId", userId);
           model.addAttribute("status", "success");
           model.addAttribute("description", fileTitle + " successfully uploaded");
 
         } else {
-
           model.addAttribute("status", "error");
-          model.addAttribute("user", user);
-          model.addAttribute("courseId", courseId);
-          model.addAttribute("userId", userId);
           model.addAttribute("description", fileTitle + " upload failed");
         }
       }
@@ -327,6 +325,7 @@ public class PostemController {
       Model model,
       @RequestParam MultipartFile myFileNewVersion,
       @RequestParam String fileTitle,
+      @RequestParam String selectedFileId,
       @RequestParam(required = false, defaultValue = "false") boolean releaseCheckbox) {
 
     CanvasAuthenticationToken token;
@@ -344,15 +343,24 @@ public class PostemController {
 
     ArrayList<String> users = canvasFileService.listUserLogins(courseId);
 
+    model.addAttribute("user", user);
+    model.addAttribute("courseId", courseId);
+    model.addAttribute("userId", userId);
+    model.addAttribute("fileId", selectedFileId);
+    model.addAttribute("displayName", fileTitle);
+
     if (!canvasFileService.isCSVFile(myFileNewVersion)) {
 
+      model.addAttribute("editType", "add");
       model.addAttribute("status", "error");
       model.addAttribute(
           "description",
           messageSource.getMessage("error.invalidformat", null, LocaleContextHolder.getLocale()));
       return "instructor/editFile";
+
     } else if (canvasFileService.isEmptyFile(myFileNewVersion)) {
 
+      model.addAttribute("editType", "add");
       model.addAttribute("status", "error");
       model.addAttribute(
           "description",
@@ -364,7 +372,9 @@ public class PostemController {
         model.addAttribute("status", "error");
         model.addAttribute("badUsers", badUsers);
         model.addAttribute("editType", "add");
-        model.addAttribute("displayName", fileTitle);
+        model.addAttribute(
+            "description",
+            messageSource.getMessage("error.invalidusers", null, LocaleContextHolder.getLocale()));
         return "instructor/editFile";
 
       } else {
@@ -378,18 +388,12 @@ public class PostemController {
                 myFileNewVersion, true, releaseFeedback, courseId, fileTitle, userId);
         if (fileId != -1) {
 
-          model.addAttribute("user", user);
-          model.addAttribute("courseId", courseId);
-          model.addAttribute("userId", userId);
           model.addAttribute("status", "success");
           model.addAttribute("description", fileTitle + " successfully uploaded");
 
         } else {
 
           model.addAttribute("status", "error");
-          model.addAttribute("user", user);
-          model.addAttribute("courseId", courseId);
-          model.addAttribute("userId", userId);
           model.addAttribute("description", fileTitle + " upload failed");
         }
       }

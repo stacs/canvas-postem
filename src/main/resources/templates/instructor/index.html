@@ -36,7 +36,7 @@
                 html1 += 'No file uploaded. Please upload a valid CSV file';
                 html1 += '</strong><br></div>';
                 $("#alerts_div").html(html1);
-
+                $("#alerts_div").show();
                 return false;
             }
 
@@ -96,17 +96,14 @@
             </div>
         </div>
     </div>
-            <div class="form-group" id="alerts_div">
-                <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'error' AND badUsers AND badUsers.size() > 0 }">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    <strong>Error - Invalid Users: Please correct the below rows and try again.</strong><br>
-                    <ul style="padding-left:20px">
-                        <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
-                    </ul>
-                </div>
-                <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'error' AND (!badUsers OR badUsers.size() == 0) }">
+            <div class="form-group">
+                <div  id="alerts_div" style="display:none"></div>
+                <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'error'}">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                     <strong><span th:text="${description}" /></strong><br>
+                    <ul style="padding-left:20px" th:if="${badUsers != null}">
+                        <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
+                    </ul>
                 </div>
                 <div class="alert alert-success alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'success'}">
                     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

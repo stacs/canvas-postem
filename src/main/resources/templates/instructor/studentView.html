@@ -12,7 +12,7 @@
                             $.ajax({
                                     method: "GET",
                                     dataType: "json",
-                                    url: "/lts-postem-v2/studentFileInfo",
+                                    url: "/lts-postem/studentFileInfo",
                                     data: {
                                          "fileId" : fileId,
                                          "user" : choice
@@ -30,15 +30,19 @@
                                           }
                                           $("#headContent").html(html);
                                           html = "";
-                                          for (i = 0; i < result.length; i++) {
-                                                if(i == 0){
-                                                    html += "<th scope='row' tabIndex='1'>" + result[i] + "</th>";
-                                                }
-                                                else{
-                                                    html += "<td tabIndex='1'>" + result[i] + "</td>";
-                                                }
+                                          if (typeof result !== 'undefined') {
+                                              for (i = 0; i < result.length; i++) {
+                                                    if(i == 0){
+                                                        html += "<th scope='row' tabIndex='1'>" + result[i] + "</th>";
+                                                    }
+                                                    else{
+                                                        html += "<td tabIndex='1'>" + result[i] + "</td>";
+                                                    }
 
+                                              }
                                           }
+
+
                                           $("#bodyContent").html(html);
                                     }
                             });

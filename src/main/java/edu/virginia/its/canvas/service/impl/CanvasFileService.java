@@ -7,7 +7,10 @@ import java.io.InputStreamReader;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -15,7 +18,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -176,25 +181,48 @@ public class CanvasFileService {
   }
 
   public List<CanvasData.File> listFiles(String courseId, String timeZone) {
-    return fetchFiles(getFolderId(courseId), timeZone);
+    long folderId = getFolderId(courseId);
+    if (folderId == -1) return new ArrayList<>();
+
+    return fetchFiles(folderId, timeZone);
   }
 
   private long getFolderId(String courseId) {
     String folder = "Posted Feedback (Do NOT Publish)";
     final long[] folderId = new long[1];
+    boolean folderNotFound = false;
 
-    WebClient.ResponseSpec responseSpec =
-        restClient
-            .get()
-            .uri(
-                uriBuilder ->
-                    uriBuilder
-                        .path("/api/v1/courses/" + courseId + "/folders/by_path/" + folder)
-                        .build())
-            .header("Authorization", "Bearer " + oauthToken)
-            .retrieve();
+    try {
+      String result =
+          restClient
+              .get()
+              .uri(
+                  uriBuilder ->
+                      uriBuilder
+                          .path("/api/v1/courses/" + courseId + "/folders/by_path/" + folder)
+                          .build())
+              .header("Authorization", "Bearer " + oauthToken)
+              .retrieve()
+              .bodyToMono(String.class)
+              .block();
 
-    if (responseSpec.toEntity(String.class).block().getStatusCode() != HttpStatus.OK) {
+      JSONArray jsonArray = new JSONArray(result);
+      IntStream.range(0, jsonArray.length())
+          .forEach(
+              i -> {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.getString("name").equalsIgnoreCase(folder)) {
+                  folderId[0] = jsonObject.getLong("id");
+                }
+              });
+
+    } catch (Exception e) {
+      if (e.getMessage().startsWith("404 Not Found")) {
+        folderNotFound = true;
+      }
+    }
+
+    if (folderNotFound) {
       String res =
           restClient
               .post()
@@ -213,18 +241,6 @@ public class CanvasFileService {
 
       JSONObject jsonObj = new JSONObject(res);
       folderId[0] = jsonObj.getLong("id");
-
-    } else {
-      String result = responseSpec.bodyToMono(String.class).block();
-      JSONArray jsonArray = new JSONArray(result);
-      IntStream.range(0, jsonArray.length())
-          .forEach(
-              i -> {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getString("name").equalsIgnoreCase(folder)) {
-                  folderId[0] = jsonObject.getLong("id");
-                }
-              });
     }
 
     return folderId[0];

@@ -12,7 +12,7 @@
             }
             function checkEmptyFile()
             {
-                if($('#myFile').val().length > 0){
+                if($('#myFileNewVersion').val().length > 0){
 
                     return true;
                 }
@@ -23,7 +23,7 @@
                     html1 += 'No file uploaded. Please upload a valid CSV file';
                     html1 += '</strong><br></div>';
                     $("#alerts_div2").html(html1);
-
+                    $("#alerts_div2").show();
                     return false;
                 }
 
@@ -33,7 +33,7 @@
 
 <body>
 <div layout:fragment="content">
-    <div class="form-group" id="alerts_div2">
+    <div class="form-group">
         <br/>
         <form th:action="@{/renameFile}" th:if="${ editType == 'rename' }" method="post">
             <div class="form-group">
@@ -53,16 +53,13 @@
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <strong>Warning: </strong>This file will overwrite and replace the existing file. Previous versions will not be saved.<br>
             </div>
-            <div class="alert alert-danger alert-dismissable" aria-live="assertive" th:if="${ status == 'error' AND badUsers AND badUsers.size() > 0 }">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <strong>Error - Invalid Users: Please correct the below rows and try again.</strong><br>
-                <ul style="padding-left:20px">
-                    <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
-                </ul>
-            </div>
-            <div class="alert alert-danger alert-dismissable" aria-live="assertive" th:if="${ status == 'error' AND (!badUsers OR badUsers.size() == 0) }">
+            <div  id="alerts_div2" style="display:none"></div>
+            <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'error'}">
                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                 <strong><span th:text="${description}" /></strong><br>
+                <ul style="padding-left:20px" th:if="${badUsers != null}">
+                    <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
+                </ul>
             </div>
             <label>Add/Update Feedback</label><br>
             <a th:href="@{'/downloadFile' }" >Download your course template</a><br>
@@ -79,6 +76,7 @@
                     <small id="fileHelpNewVersion" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB.</small>
                 </div>
                 <input type="hidden" name="fileTitle" th:value="${displayName}" />
+                <input type="hidden" name="selectedFileId" th:value="${fileId}" />
                 <div class="form-group">
                     <label>
                         <input type="checkbox" name="releaseCheckbox" />

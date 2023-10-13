@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserFileViewLogRepository
-    extends JpaRepository<UserFileViewLog, Long> {
+public interface UserFileViewLogRepository extends JpaRepository<UserFileViewLog, Long> {
 
   ArrayList<UserFileViewLog> findAllByFileId(String fileId);
 
