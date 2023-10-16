@@ -8,14 +8,14 @@
 <div class="table_wrapper" tabIndex="1">
 <table class="table table-bordered" id="studentViewFileTable" data-toggle="table"  data-smart-display="true" tabIndex="1">
     <thead style="background-color: #f5f5f5;">
-    <tr th:each="header : ${headers}">
-       <th scope="col" tabIndex="1"><span th:text="${header}" /></th>
+    <tr>
+       <th scope="col" tabIndex="1" th:each="header : ${headers}"><span th:text="${header}" /></th>
     </tr>
     </thead>
     <tbody>
         <tr th:each="content : ${contents}">
-            <th scope="row" tabIndex="1" th:each="contentRow, contentRowStat : ${content}" th:if="${contentRowStat == 0}"><span th:text="${contentRow}" /></th>
-            <th tabIndex="1" th:each="contentRow, contentRowStat : ${content}" th:if="${contentRowStat != 0 }"><span th:text="${contentRow}" /></th>
+            <th scope="row" tabIndex="1" th:each="contentRow, contentRowStat : ${content}" th:if="${contentRowStat.index == 0}"><span th:text="${contentRow}" /></th>
+            <td tabIndex="1" th:each="contentRow, contentRowStat : ${content}" th:if="${contentRowStat.index != 0 }"><span th:text="${contentRow}" /></td>
         </tr>
     </tbody>
 </table>

@@ -42,22 +42,27 @@ public class CanvasFileService {
 
     long folderId = getFolderId(courseId);
 
-    String resp =
-        restClient
-            .post()
-            .uri(
-                uriBuilder ->
-                    uriBuilder
-                        .path("/api/v1/courses/" + courseId + "/files")
-                        .queryParam("as_user_id", userId)
-                        .queryParam("name", fileName)
-                        .queryParam("parent_folder_id", folderId)
-                        .queryParam("locked", uploadAsLocked)
-                        .build())
-            .header("Authorization", "Bearer " + oauthToken)
-            .retrieve()
-            .bodyToMono(String.class)
-            .block();
+    try {
+      String resp =
+          restClient
+              .post()
+              .uri(
+                  uriBuilder ->
+                      uriBuilder
+                          .path("/api/v1/courses/" + courseId + "/files")
+                          .queryParam("as_user_id", userId)
+                          .queryParam("name", fileName)
+                          .queryParam("parent_folder_id", folderId)
+                          .queryParam("locked", uploadAsLocked)
+                          .build())
+              .header("Authorization", "Bearer " + oauthToken)
+              .retrieve()
+              .bodyToMono(String.class)
+              .block();
+      return resp;
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
 
     // UploadParams uploadParams = new UploadParams(uploadUrl: resp.json.upload_url, awsAccessKeyId:
     // resp.json.upload_params.AWSAccessKeyId,
@@ -66,7 +71,7 @@ public class CanvasFileService {
     //        signature: resp.json.upload_params.Signature, successAccessRedirect:
     // resp.json.upload_params.success_action_redirect, contentType:
     // resp.json.upload_params.'content-type')
-    return resp;
+    return null;
   }
 
   private String awsUpload(String uploadParams, MultipartFile multipartFile) {
@@ -130,52 +135,66 @@ public class CanvasFileService {
 
       JSONObject uploadResponse = new JSONObject(awsUploadResponse);
 
-      String resp =
-          restClient
-              .post()
-              .uri(uploadResponse.getString("location"))
-              .header("Authorization", "Bearer " + oauthToken)
-              .retrieve()
-              .bodyToMono(String.class)
-              .block();
+      try {
+        String resp =
+            restClient
+                .post()
+                .uri(uploadResponse.getString("location"))
+                .header("Authorization", "Bearer " + oauthToken)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        JSONObject respObj = new JSONObject(resp);
 
-      JSONObject respObj = new JSONObject(resp);
-      if (respObj.has("id")) {
-        long fileId = respObj.getLong("id");
-        log.info(
-            " File Uploaded for Posted Feedback Tool by user "
-                + userId
-                + " in course "
-                + courseId
-                + ". File Details : display_name = "
-                + respObj.getString("display_name")
-                + ","
-                + " Id = "
-                + fileId
-                + ","
-                + " size = "
-                + respObj.getLong("size")
-                + ","
-                + "url = "
-                + respObj.getString("url"));
+        if (respObj.has("id")) {
+          long fileId = respObj.getLong("id");
+          log.info(
+              " File Uploaded for Posted Feedback Tool by user "
+                  + userId
+                  + " in course "
+                  + courseId
+                  + ". File Details : display_name = "
+                  + respObj.getString("display_name")
+                  + ","
+                  + " Id = "
+                  + fileId
+                  + ","
+                  + " size = "
+                  + respObj.getLong("size")
+                  + ","
+                  + "url = "
+                  + respObj.getString("url"));
 
-        if (releaseFeedback) {
-          hideFile(String.valueOf(fileId), true);
+          if (releaseFeedback) {
+            hideFile(String.valueOf(fileId), true);
+          } else {
+            hideFile(String.valueOf(fileId), false);
+          }
+          return fileId;
+
         } else {
-          hideFile(String.valueOf(fileId), false);
+          log.error(
+              "File Upload failed by user "
+                  + userId
+                  + " in course "
+                  + courseId
+                  + ". File Title = "
+                  + fileTitle);
+          return -1;
         }
-        return fileId;
 
-      } else {
-        log.error(
-            "File Upload failed by user "
-                + userId
-                + " in course "
-                + courseId
-                + ". File Title = "
-                + fileTitle);
-        return -1;
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
       }
+
+    } else {
+      log.error(
+          "File Upload failed by user "
+              + userId
+              + " in course "
+              + courseId
+              + ". File Title = "
+              + fileTitle);
     }
     return -1;
   }
@@ -289,23 +308,30 @@ public class CanvasFileService {
 
   public CanvasData.File fetchFile(Long fileId, String timeZone) {
 
-    String resp =
-        restClient
-            .get()
-            .uri(
-                uriBuilder ->
-                    uriBuilder
-                        .path("/api/v1/files/" + fileId)
-                        .queryParam("include[]", "user")
-                        .build())
-            .header("Authorization", "Bearer " + oauthToken)
-            .retrieve()
-            .bodyToMono(String.class)
-            .block();
+    String resp = null;
+    try {
 
+      resp =
+          restClient
+              .get()
+              .uri(
+                  uriBuilder ->
+                      uriBuilder
+                          .path("/api/v1/files/" + fileId)
+                          .queryParam("include[]", "user")
+                          .build())
+              .header("Authorization", "Bearer " + oauthToken)
+              .retrieve()
+              .bodyToMono(String.class)
+              .block();
+
+    } catch (Exception e) {
+      if (e.getMessage().startsWith("404 Not Found")) {
+        log.error(e.getMessage(), e);
+      }
+    }
     if (resp != null) {
 
-      // TODO
       JSONObject jsonObj = new JSONObject(resp);
 
       if (jsonObj != null) {

@@ -418,11 +418,27 @@ public class PostemController {
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
 
-    String fileName = canvasFileService.deleteFile(fileId);
+    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+    boolean fileExists = false;
+    for (CanvasData.File file : fileList) {
+      if (file.fileId() == Long.parseLong(fileId)) {
+        fileExists = true;
+      }
+    }
+
+    if (fileExists) {
+      String fileName = canvasFileService.deleteFile(fileId);
+      model.addAttribute("status", "success");
+      model.addAttribute("description", fileName + " successfully deleted.");
+
+    } else {
+      model.addAttribute("status", "error");
+      model.addAttribute(
+          "description",
+          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+    }
 
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
-    model.addAttribute("status", "success");
-    model.addAttribute("description", fileName + " successfully deleted.");
 
     return "instructor/index";
   }
@@ -442,10 +458,26 @@ public class PostemController {
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
 
-    canvasFileService.hideFile(fileId, true);
+    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+    boolean fileExists = false;
+    for (CanvasData.File file : fileList) {
+      if (file.fileId() == Long.parseLong(fileId)) {
+        fileExists = true;
+      }
+    }
+
+    if (fileExists) {
+      canvasFileService.hideFile(fileId, true);
+      model.addAttribute("status", "success");
+      model.addAttribute("description", displayName + " successfully released to students.");
+
+    } else {
+      model.addAttribute("status", "error");
+      model.addAttribute(
+          "description",
+          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+    }
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
-    model.addAttribute("status", "success");
-    model.addAttribute("description", displayName + " successfully released to students.");
 
     return "instructor/index";
   }
@@ -465,10 +497,26 @@ public class PostemController {
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
 
-    canvasFileService.hideFile(fileId, false);
+    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+    boolean fileExists = false;
+    for (CanvasData.File file : fileList) {
+      if (file.fileId() == Long.parseLong(fileId)) {
+        fileExists = true;
+      }
+    }
+
+    if (fileExists) {
+      canvasFileService.hideFile(fileId, false);
+      model.addAttribute("status", "success");
+      model.addAttribute("description", displayName + " successfully unreleased.");
+    } else {
+      model.addAttribute("status", "error");
+      model.addAttribute(
+          "description",
+          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+    }
+
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
-    model.addAttribute("status", "success");
-    model.addAttribute("description", displayName + " successfully unreleased.");
 
     return "instructor/index";
   }
@@ -584,17 +632,32 @@ public class PostemController {
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
 
-    canvasFileService.updateFileName(fileId, fileName);
+    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+    boolean fileExists = false;
+    for (CanvasData.File file : fileList) {
+      if (file.fileId() == Long.parseLong(fileId)) {
+        fileExists = true;
+      }
+    }
+
+    if (fileExists) {
+      canvasFileService.updateFileName(fileId, fileName);
+      model.addAttribute("status", "success");
+      model.addAttribute("description", "Feedback file successfully renamed to " + fileName + ".");
+
+    } else {
+      model.addAttribute("status", "error");
+      model.addAttribute(
+          "description",
+          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+    }
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
-    model.addAttribute("status", "success");
-    model.addAttribute("description", "Feedback file successfully renamed to " + fileName + ".");
 
     return "instructor/index";
   }
 
   @GetMapping("/handleSizeLimitExceededException")
   public String handleSizeLimitExceededException(Model model) {
-
     CanvasAuthenticationToken token;
 
     try {
