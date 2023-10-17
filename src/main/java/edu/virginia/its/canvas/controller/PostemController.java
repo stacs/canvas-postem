@@ -7,6 +7,8 @@ import edu.virginia.its.canvas.service.impl.CanvasFileService;
 import edu.virginia.its.canvas.service.impl.CanvasUserService;
 import edu.virginia.its.canvas.util.Constants;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +61,11 @@ public class PostemController {
     String user = token.getCustomValue(Constants.CANVAS_USER);
 
     log.info(
-        "Authenticated LTI request by Posted Feedback for user: "
+        "Authenticated LTI request by Posted Feedback for user id: "
             + userId
+            + "( login: "
+            + user
+            + " )"
             + " in course: "
             + courseId
             + " with roles: "
@@ -135,6 +140,13 @@ public class PostemController {
     userActivity.stream()
         .forEach(
             activity -> {
+              activity.setLastViewedString(
+                  activity
+                      .getLastViewed()
+                      .toZonedDateTime()
+                      .withZoneSameInstant(ZoneId.of(timeZone))
+                      .toLocalDateTime()
+                      .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
               activityMap.put(activity.getLoginId(), activity);
             });
 
@@ -601,7 +613,14 @@ public class PostemController {
             for (UserFileViewLog activity : userActivity) {
               if (activity.getLoginId().equalsIgnoreCase(key)) {
                 activityFound = true;
-                columnData += "," + activity.getLastViewed().toString() + "\n";
+                activity.setLastViewedString(
+                    activity
+                        .getLastViewed()
+                        .toZonedDateTime()
+                        .withZoneSameInstant(ZoneId.of(timeZone))
+                        .toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                columnData += "," + activity.getLastViewedString() + "\n";
               }
             }
             if (!activityFound) {

@@ -26,4 +26,6 @@ public class UserFileViewLog {
 
   @Column(name = "last_viewed", nullable = false)
   private OffsetDateTime lastViewed;
+
+  @Transient private String lastViewedString;
 }
