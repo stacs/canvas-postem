@@ -611,7 +611,7 @@ public class CanvasFileService {
                 uriBuilder ->
                     uriBuilder
                         .path("/api/v1/files/" + fileId)
-                        .queryParam("name", fileName)
+                        .queryParam("name", fileName + ".csv")
                         .queryParam("on_duplicate", "rename")
                         .build())
             .header("Authorization", "Bearer " + oauthToken)

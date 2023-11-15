@@ -81,7 +81,7 @@ public class PostemController {
       model.addAttribute("userId", userId);
 
       return "instructor/index";
-    } else if (roles.contains("StudentEnrollment")) {
+    } else if (roles.contains("StudentEnrollment") || roles.contains("Waitlisted Student")) {
 
       List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
       List<CanvasData.File> filteredList = canvasFileService.filterByUser(fileList, user);

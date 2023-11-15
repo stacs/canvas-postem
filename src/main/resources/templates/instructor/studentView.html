@@ -4,7 +4,7 @@
     <script type="text/javascript">
                 function changeList(fileId) {
                        var choice = document.getElementById('participantselect').value;
-                       if(choice == 'null'){
+                       if(choice == '-1'){
                           $("#headContent").html("");
                           $("#bodyContent").html("");
                        }
@@ -61,19 +61,20 @@
         <label for="participantselect">Select a Student</label>
         <select id="participantselect" name="participantchoice"
                 th:attr="onchange=|JavaScript:changeList('${fileId}')|" >
+            <option value="-1" selected>Please Choose...</option>
             <option th:each="login : ${logins}" th:value="${login.key}" th:text="${login.value}"></option>
         </select>
 
     </div>
     <div class="table_wrapper" tabIndex="1">
-    <table class="table table-bordered" id="studentTableInstructorView" data-toggle="table"  data-smart-display="true" tabIndex="1">
-    <thead style='background-color: #f5f5f5;'><tr id="headContent">
+        <table class="table table-bordered" id="studentTableInstructorView" data-toggle="table"  data-smart-display="true" tabIndex="1">
+            <thead style='background-color: #f5f5f5;'><tr id="headContent">
 
-    </tr></thead><tbody><tr id="bodyContent">
+            </tr></thead><tbody><tr id="bodyContent">
 
 
-    </tr></tbody></table>
-    </span></div>
+        </tr></tbody></table>
+        </span></div>
     <br><br>
     <a th:href="@{'/instructorHome' }" class="btn btn-custom-dark" style="text-decoration:none" role="button">Back</a>
 </div>
