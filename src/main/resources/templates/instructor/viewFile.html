@@ -56,7 +56,7 @@
         </thead>
         <tbody>
                 <tr th:each="content : ${contents}">
-                    <td th:each="contentRow, contentRowStat : ${content}" th:attr="class=${ contentRowStat.index == 0 AND  userActivity.get(content[0]) != null ? 'bg-success' : ''}"><span th:text="${contentRow}" /></td>
+                    <td th:each="contentRow, contentRowStat : ${content}" ><span th:text="${contentRow}" /></td>
                     <td><span th:text="${userActivity.get(content[0]).lastViewedString}" th:if="${userActivity.get(content[0]) != null }" /><span text="Never" th:if="${userActivity.get(content[0]) == null}" /></td>
                 </tr>
         </tbody>
