@@ -1,6 +1,8 @@
 server:
   servlet:
     context-path: /lts-postem
+  tomcat:
+    max-swallow-size: 20MB
 
 spring:
   datasource:
@@ -23,6 +25,7 @@ spring:
     active: dev
 
 ltitool:
+  toolName: lts-postem
   baseUrl: http://localhost:8080
   canvas:
     apiUrl:

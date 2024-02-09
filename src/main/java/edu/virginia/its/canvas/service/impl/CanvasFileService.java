@@ -571,14 +571,16 @@ public class CanvasFileService {
                   String sortableName = jsonObj.getString("sortable_name");
                   String[] splitName = sortableName.split(",");
                   String[] userDetails;
-                  if (splitName.length == 2) {
-                    userDetails =
-                        new String[] {jsonObj.getString("login_id"), splitName[0], splitName[1]};
-                  } else {
-                    userDetails = new String[] {jsonObj.getString("login_id"), splitName[0], ""};
-                  }
 
-                  users.add(userDetails);
+                  if (jsonObj.has("login_id")) {
+                    if (splitName.length == 2) {
+                      userDetails =
+                          new String[] {jsonObj.getString("login_id"), splitName[0], splitName[1]};
+                    } else {
+                      userDetails = new String[] {jsonObj.getString("login_id"), splitName[0], ""};
+                    }
+                    users.add(userDetails);
+                  }
                 }
               });
     }
@@ -718,8 +720,10 @@ public class CanvasFileService {
       CSVReader csvReader = new CSVReader(reader);
       String[] nextLine;
 
-      // skip headers
-      csvReader.readNext();
+      nextLine = csvReader.readNext();
+      if (!nextLine[0].equalsIgnoreCase("Login ID")) {
+        badUsers.add("Column 1: Header should be Login ID");
+      }
       int rowCounter = 1;
       while ((nextLine = csvReader.readNext()) != null) {
         rowCounter++;
@@ -729,6 +733,9 @@ public class CanvasFileService {
           } else {
             badUsers.add("Row " + rowCounter + ": " + nextLine[0] + " is not enrolled");
           }
+        }
+        if (nextLine.length == 1) {
+          badUsers.add("Row " + rowCounter + ": does not have content.");
         }
       }
       reader.close();
@@ -759,7 +766,10 @@ public class CanvasFileService {
   }
 
   public boolean isCSVFile(MultipartFile file) {
-    if (file.getContentType().equalsIgnoreCase("text/csv")) {
+    String[] fragments = file.getOriginalFilename().split("\\.");
+    if (file.getContentType().equalsIgnoreCase("text/csv")
+        || (file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")
+            && fragments[fragments.length - 1].equalsIgnoreCase("csv"))) {
       return true;
     }
     return false;

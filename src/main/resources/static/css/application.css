@@ -800,3 +800,9 @@ td {
 /*table {
   table-layout: fixed;
 }*/
+
+.subheading {
+    font-size:1.1em;
+    text-align: center;
+    margin-top: 10px;
+ }

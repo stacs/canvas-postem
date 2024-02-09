@@ -35,6 +35,8 @@ public class CanvasUserService {
             .get()
             .uri(
                 UriComponentsBuilder.fromPath("/api/v1/courses/" + course_id + "/users")
+                    .queryParam("enrollment_type[]", "student")
+                    .queryParam("enrollment_state[]", "active")
                     .queryParam("per_page", 100)
                     .buildAndExpand()
                     .toString())

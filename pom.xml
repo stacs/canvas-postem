@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>edu.virginia.its.lts</groupId>
 			<artifactId>lti-13-library</artifactId>
-			<version>1.0.0</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>biz.paluch.logging</groupId>
@@ -102,10 +102,6 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.10-FINAL</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-quartz</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>

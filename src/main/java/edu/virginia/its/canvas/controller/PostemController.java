@@ -6,6 +6,7 @@ import edu.virginia.its.canvas.repos.UserFileViewLogRepository;
 import edu.virginia.its.canvas.service.impl.CanvasFileService;
 import edu.virginia.its.canvas.service.impl.CanvasUserService;
 import edu.virginia.its.canvas.util.Constants;
+import edu.virginia.its.canvas.util.MessageUtils;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -13,10 +14,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,10 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
+@ControllerAdvice
 @RequiredArgsConstructor
 public class PostemController {
 
@@ -41,7 +43,7 @@ public class PostemController {
   @Autowired private CanvasUserService canvasUserService;
   @Autowired UserFileViewLogRepository userFileViewLogRepository;
 
-  private final MessageSource messageSource;
+  @Autowired MessageUtils messageUtils;
 
   @GetMapping("/launch")
   public String launch(Model model) {
@@ -71,9 +73,7 @@ public class PostemController {
             + " with roles: "
             + roles);
 
-    if (roles.contains("TeacherEnrollment")
-        || roles.contains("TaEnrollment")
-        || roles.contains("Account Admin")) {
+    if (roles.contains("TeacherEnrollment") || roles.contains("TaEnrollment")) {
 
       model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
       model.addAttribute("user", user);
@@ -91,6 +91,14 @@ public class PostemController {
       model.addAttribute("userId", userId);
 
       return "student/index";
+    } else if (roles.contains("Account Admin")) {
+
+      model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
+      model.addAttribute("user", user);
+      model.addAttribute("courseId", courseId);
+      model.addAttribute("userId", userId);
+
+      return "instructor/index";
     }
 
     return "unauthorized";
@@ -220,9 +228,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(
-              messageSource.getMessage(
-                  "dashboard.unauthorized", null, LocaleContextHolder.getLocale()));
+          .body(messageUtils.getMessage("dashboard.unauthorized"));
     }
 
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
@@ -290,23 +296,50 @@ public class PostemController {
     if (!canvasFileService.isCSVFile(myFile)) {
 
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.invalidformat", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.invalidformat"));
+      log.info(
+          messageUtils.getMessage("error.invalidformat")
+              + ". File Title = "
+              + fileTitle
+              + ", File Type = "
+              + myFile.getContentType()
+              + ", Course Id = "
+              + courseId
+              + ", user "
+              + user);
     } else if (canvasFileService.isEmptyFile(myFile)) {
 
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.emptyfile", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.emptyfile"));
+      log.info(
+          messageUtils.getMessage("error.emptyfile")
+              + ". File Title = "
+              + fileTitle
+              + ", File Type = "
+              + myFile.getContentType()
+              + ", Course Id = "
+              + courseId
+              + ", user "
+              + user);
+
     } else {
       ArrayList<String> badUsers = canvasFileService.validateFile(myFile, users);
       if (badUsers.size() > 0) {
         model.addAttribute("status", "error");
         model.addAttribute("badUsers", badUsers);
-        model.addAttribute(
-            "description",
-            messageSource.getMessage("error.invalidusers", null, LocaleContextHolder.getLocale()));
+        model.addAttribute("description", messageUtils.getMessage("error.invalidcontent"));
+        log.info(
+            messageUtils.getMessage("error.invalidcontent")
+                + ". File Title = "
+                + fileTitle
+                + ", File Type = "
+                + myFile.getContentType()
+                + ", Course Id = "
+                + courseId
+                + ", user "
+                + user
+                + ", invalid users ="
+                + StringUtils.join(badUsers, ","));
 
       } else {
         fileTitle = fileTitle + ".csv";
@@ -365,18 +398,36 @@ public class PostemController {
 
       model.addAttribute("editType", "add");
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.invalidformat", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.invalidformat"));
+      log.info(
+          messageUtils.getMessage("error.invalidformat")
+              + ". File Title = "
+              + fileTitle
+              + ", File Type = "
+              + myFileNewVersion.getContentType()
+              + ", Course Id = "
+              + courseId
+              + ", user "
+              + user);
+
       return "instructor/editFile";
 
     } else if (canvasFileService.isEmptyFile(myFileNewVersion)) {
 
       model.addAttribute("editType", "add");
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.emptyfile", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.emptyfile"));
+      log.info(
+          messageUtils.getMessage("error.emptyfile")
+              + ". File Title = "
+              + fileTitle
+              + ", File Type = "
+              + myFileNewVersion.getContentType()
+              + ", Course Id = "
+              + courseId
+              + ", user "
+              + user);
+
       return "instructor/editFile";
     } else {
       ArrayList<String> badUsers = canvasFileService.validateFile(myFileNewVersion, users);
@@ -384,9 +435,20 @@ public class PostemController {
         model.addAttribute("status", "error");
         model.addAttribute("badUsers", badUsers);
         model.addAttribute("editType", "add");
-        model.addAttribute(
-            "description",
-            messageSource.getMessage("error.invalidusers", null, LocaleContextHolder.getLocale()));
+        model.addAttribute("description", messageUtils.getMessage("error.invalidcontent"));
+        log.info(
+            messageUtils.getMessage("error.invalidcontent")
+                + ". File Title = "
+                + fileTitle
+                + ", File Type = "
+                + myFileNewVersion.getContentType()
+                + ", Course Id = "
+                + courseId
+                + ", user "
+                + user
+                + ", bad users ="
+                + StringUtils.join(badUsers, ","));
+
         return "instructor/editFile";
 
       } else {
@@ -445,9 +507,8 @@ public class PostemController {
 
     } else {
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.filenotexist"));
+      log.info(messageUtils.getMessage("error.filenotexist") + ". File Id = " + fileId);
     }
 
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
@@ -485,9 +546,8 @@ public class PostemController {
 
     } else {
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.filenotexist"));
+      log.info(messageUtils.getMessage("error.filenotexist") + ". File Id = " + fileId);
     }
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
 
@@ -523,9 +583,8 @@ public class PostemController {
       model.addAttribute("description", displayName + " successfully unreleased.");
     } else {
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.filenotexist"));
+      log.info(messageUtils.getMessage("error.filenotexist") + ". File Id = " + fileId);
     }
 
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
@@ -542,9 +601,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(
-              messageSource.getMessage(
-                  "dashboard.unauthorized", null, LocaleContextHolder.getLocale()));
+          .body(messageUtils.getMessage("dashboard.unauthorized"));
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -578,9 +635,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(
-              messageSource.getMessage(
-                  "dashboard.unauthorized", null, LocaleContextHolder.getLocale()));
+          .body(messageUtils.getMessage("dashboard.unauthorized"));
     }
 
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
@@ -666,17 +721,17 @@ public class PostemController {
 
     } else {
       model.addAttribute("status", "error");
-      model.addAttribute(
-          "description",
-          messageSource.getMessage("error.filenotexist", null, LocaleContextHolder.getLocale()));
+      model.addAttribute("description", messageUtils.getMessage("error.filenotexist"));
+      log.info(messageUtils.getMessage("error.filenotexist") + ". File Id = " + fileId);
     }
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
 
     return "instructor/index";
   }
 
-  @GetMapping("/handleSizeLimitExceededException")
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
   public String handleSizeLimitExceededException(Model model) {
+
     CanvasAuthenticationToken token;
 
     try {
@@ -687,12 +742,17 @@ public class PostemController {
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
+    String user = token.getCustomValue(Constants.CANVAS_USER);
 
     model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
     model.addAttribute("status", "error");
-    model.addAttribute(
-        "description",
-        messageSource.getMessage("error.filesize.exceeded", null, LocaleContextHolder.getLocale()));
+    model.addAttribute("description", messageUtils.getMessage("error.filesize.exceeded"));
+    log.info(
+        messageUtils.getMessage("error.filesize.exceeded")
+            + ", Course Id = "
+            + courseId
+            + ", user "
+            + user);
     return "instructor/index";
   }
 

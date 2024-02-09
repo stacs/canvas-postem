@@ -1,11 +1,8 @@
-<!doctype html>
-<html>
-    <head>
-
-    </head>
-    <body>
-        <ul class="errors">
-            <li>An error has occurred</li>
-        </ul>
-    </body>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org">
+<body>
+<h1 th:text="#{error403.header}"></h1>
+<p th:utext="#{error403.description}"></p>
+</body>
 </html>
