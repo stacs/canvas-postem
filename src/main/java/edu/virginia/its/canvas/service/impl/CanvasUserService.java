@@ -1,6 +1,9 @@
 package edu.virginia.its.canvas.service.impl;
 
 import edu.virginia.its.canvas.model.CanvasData;
+import edu.virginia.its.canvas.util.Constants;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -95,16 +99,15 @@ public class CanvasUserService {
   }
 
   private String canvasNextPage(ResponseEntity<String> resp) {
-    String linkHeader = resp.getHeaders().getFirst("Link");
+    String linkHeader = resp.getHeaders().getFirst(Constants.CANVAS_LINK_HEADER);
     String nextLink = null;
-    if (linkHeader != null) {
+    if (linkHeader != null && !linkHeader.isEmpty()) {
       String[] links = linkHeader.split(",");
       for (String link : links) {
-        String[] linkParts = link.split(";");
-        String relVal = linkParts[0];
-        String relType = linkParts[1];
-        if (relType.contains("next")) {
-          nextLink = relVal.substring(1, relVal.length() - 1);
+        Link link1 = Link.valueOf(link);
+        if (link1.hasRel("next")) {
+          String href = link1.getHref();
+          nextLink = URLDecoder.decode(href, StandardCharsets.UTF_8);
           break;
         }
       }

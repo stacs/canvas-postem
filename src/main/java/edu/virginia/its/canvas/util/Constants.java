@@ -17,4 +17,6 @@ public class Constants {
   public static final String LIBRARIAN = "Librarian";
   public static final String DESIGNER_ENROLLMENT = "DesignerEnrollment";
   public static final String OBSERVER_ENROLLMENT = "ObserverEnrollment";
+
+  public static final String CANVAS_LINK_HEADER = "link";
 }

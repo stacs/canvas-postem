@@ -2,8 +2,11 @@ package edu.virginia.its.canvas.service.impl;
 
 import com.opencsv.CSVReader;
 import edu.virginia.its.canvas.model.CanvasData;
+import edu.virginia.its.canvas.util.Constants;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +21,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -587,16 +591,15 @@ public class CanvasFileService {
   }
 
   private String canvasNextPage(ResponseEntity<String> resp) {
-    String linkHeader = resp.getHeaders().getFirst("Link");
+    String linkHeader = resp.getHeaders().getFirst(Constants.CANVAS_LINK_HEADER);
     String nextLink = null;
-    if (linkHeader != null) {
+    if (linkHeader != null && !linkHeader.isEmpty()) {
       String[] links = linkHeader.split(",");
       for (String link : links) {
-        String[] linkParts = link.split(";");
-        String relVal = linkParts[0];
-        String relType = linkParts[1];
-        if (relType.contains("next")) {
-          nextLink = relVal.substring(1, relVal.length() - 1);
+        Link link1 = Link.valueOf(link);
+        if (link1.hasRel("next")) {
+          String href = link1.getHref();
+          nextLink = URLDecoder.decode(href, StandardCharsets.UTF_8);
           break;
         }
       }
