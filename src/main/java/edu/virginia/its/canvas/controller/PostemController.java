@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @ControllerAdvice
 @RequiredArgsConstructor
+@SessionAttributes({"studentFilesList"})
 public class PostemController {
 
   @Value("${ltitool.canvas.apiUrl}")
@@ -85,7 +86,7 @@ public class PostemController {
 
       List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
       List<CanvasData.File> filteredList = canvasFileService.filterByUser(fileList, user);
-      model.addAttribute("courseFiles", filteredList);
+      model.addAttribute("studentFilesList", filteredList);
       model.addAttribute("user", user);
       model.addAttribute("courseId", courseId);
       model.addAttribute("userId", userId);
@@ -757,7 +758,8 @@ public class PostemController {
   }
 
   @GetMapping("/studentHome")
-  public String studentHome(Model model) {
+  public String studentHome(
+      Model model, @ModelAttribute("studentFilesList") List<CanvasData.File> filteredList) {
 
     CanvasAuthenticationToken token;
 
@@ -767,13 +769,7 @@ public class PostemController {
       return "unauthorized";
     }
 
-    String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
-    String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
-    String user = token.getCustomValue(Constants.CANVAS_USER);
-
-    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
-    List<CanvasData.File> filteredList = canvasFileService.filterByUser(fileList, user);
-    model.addAttribute("courseFiles", filteredList);
+    model.addAttribute("studentFilesList", filteredList);
     return "student/index";
   }
 
