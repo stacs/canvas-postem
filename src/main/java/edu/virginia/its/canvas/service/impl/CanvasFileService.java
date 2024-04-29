@@ -739,6 +739,17 @@ public class CanvasFileService {
         }
         if (nextLine.length == 1) {
           badUsers.add("Row " + rowCounter + ": does not have content.");
+        } else {
+          boolean empty = true;
+          for (int i = 1; i < nextLine.length; i++) {
+            if (!nextLine[i].equalsIgnoreCase("")) {
+              empty = false;
+              break;
+            }
+          }
+          if (empty) {
+            badUsers.add("Row " + rowCounter + ": does not have content.");
+          }
         }
       }
       reader.close();
