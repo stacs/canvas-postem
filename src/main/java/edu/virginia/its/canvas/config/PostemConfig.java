@@ -13,6 +13,6 @@ public class PostemConfig {
 
   @Bean
   public WebClient webClient() {
-    return WebClient.builder().baseUrl("https://" + apiUrl).build();
+    return WebClient.builder().baseUrl(apiUrl).build();
   }
 }

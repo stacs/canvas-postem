@@ -53,7 +53,7 @@ public class CanvasFileService {
               .uri(
                   uriBuilder ->
                       uriBuilder
-                          .path("/api/v1/courses/" + courseId + "/files")
+                          .path("/courses/" + courseId + "/files")
                           .queryParam("as_user_id", userId)
                           .queryParam("name", fileName)
                           .queryParam("parent_folder_id", folderId)
@@ -222,7 +222,7 @@ public class CanvasFileService {
               .uri(
                   uriBuilder ->
                       uriBuilder
-                          .path("/api/v1/courses/" + courseId + "/folders/by_path/" + folder)
+                          .path("/courses/" + courseId + "/folders/by_path/" + folder)
                           .build())
               .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
@@ -252,7 +252,7 @@ public class CanvasFileService {
               .uri(
                   uriBuilder ->
                       uriBuilder
-                          .path("/api/v1/courses/" + courseId + "/folders")
+                          .path("/courses/" + courseId + "/folders")
                           .queryParam("name", folder)
                           .queryParam("locked", true)
                           .queryParam("parent_folder_path", "/")
@@ -278,7 +278,7 @@ public class CanvasFileService {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/api/v1/folders/" + folderId + "/files")
+                        .path("/folders/" + folderId + "/files")
                         .queryParam("include[]", "user")
                         .queryParam("sort", "created_at")
                         .queryParam("order", "desc")
@@ -320,10 +320,7 @@ public class CanvasFileService {
               .get()
               .uri(
                   uriBuilder ->
-                      uriBuilder
-                          .path("/api/v1/files/" + fileId)
-                          .queryParam("include[]", "user")
-                          .build())
+                      uriBuilder.path("/files/" + fileId).queryParam("include[]", "user").build())
               .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
               .bodyToMono(String.class)
@@ -431,7 +428,7 @@ public class CanvasFileService {
     String resp =
         restClient
             .get()
-            .uri(uriBuilder -> uriBuilder.path("/api/v1/files/" + fileId).build())
+            .uri(uriBuilder -> uriBuilder.path("/files/" + fileId).build())
             .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .bodyToMono(String.class)
@@ -445,7 +442,7 @@ public class CanvasFileService {
       }
       restClient
           .delete()
-          .uri(uriBuilder -> uriBuilder.path("/api/v1/files/" + fileId).build())
+          .uri(uriBuilder -> uriBuilder.path("/files/" + fileId).build())
           .header("Authorization", "Bearer " + oauthToken)
           .retrieve()
           .bodyToMono(String.class)
@@ -461,7 +458,7 @@ public class CanvasFileService {
             .put()
             .uri(
                 uriBuilder ->
-                    uriBuilder.path("/api/v1/files/" + fileId).queryParam("hidden", hide).build())
+                    uriBuilder.path("/files/" + fileId).queryParam("hidden", hide).build())
             .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .bodyToMono(String.class)
@@ -477,7 +474,7 @@ public class CanvasFileService {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/api/v1/courses/" + courseId + "/users")
+                        .path("/courses/" + courseId + "/users")
                         .queryParam("enrollment_type[]", "student")
                         .queryParam("enrollment_state[]", "active")
                         .queryParam("per_page", 100)
@@ -532,7 +529,7 @@ public class CanvasFileService {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/api/v1/courses/" + courseId + "/users")
+                        .path("/courses/" + courseId + "/users")
                         .queryParam("enrollment_type[]", "student")
                         .queryParam("enrollment_state[]", "active")
                         .queryParam("per_page", 100)
@@ -615,7 +612,7 @@ public class CanvasFileService {
             .uri(
                 uriBuilder ->
                     uriBuilder
-                        .path("/api/v1/files/" + fileId)
+                        .path("/files/" + fileId)
                         .queryParam("name", fileName + ".csv")
                         .queryParam("on_duplicate", "rename")
                         .build())
