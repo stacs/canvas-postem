@@ -1,14 +1,14 @@
 server:
   servlet:
-    context-path: /lts-postem
+    context-path: ${context.path}
   tomcat:
     max-swallow-size: 20MB
 
 spring:
   datasource:
-    url:
-    username:
-    password:
+    url: ${db.url}
+    username: ${db.user}
+    password: ${db.pass}
   jpa:
     properties:
       hibernate:
@@ -25,8 +25,8 @@ spring:
     active: dev
 
 ltitool:
-  toolName: lts-postem
+  toolName: posted-feedback
   baseUrl: http://localhost:8080
   canvas:
-    apiUrl:
-    apiToken:
+    apiUrl: ${api.url}
+    apiToken: ${api.token}
