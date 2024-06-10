@@ -1,0 +1,36 @@
+<configuration>
+    <appender name="gelf" class="biz.paluch.logging.gelf.logback.GelfLogbackAppender">
+        <host>udp:stacs-log-s.its.virginia.edu</host>
+        <port>12201</port>
+        <version>1.1</version>
+        <facility>lts-postem</facility>
+        <springProfile name="dev">
+            <originHost>lts-postem.dev.${HOSTNAME}</originHost>
+        </springProfile>
+        <springProfile name="prod">
+            <originHost>lts-postem.prod.${HOSTNAME}</originHost>
+        </springProfile>
+        <extractStackTrace>true</extractStackTrace>
+        <filterStackTrace>true</filterStackTrace>
+        <mdcProfiling>true</mdcProfiling>
+        <timestampPattern>yyyy-MM-dd HH:mm:ss,SSS</timestampPattern>
+        <maximumMessageSize>8192</maximumMessageSize>
+        <springProfile name="dev">
+            <additionalFields>ProdStatus=dev</additionalFields>
+        </springProfile>
+        <springProfile name="prod">
+            <additionalFields>ProdStatus=prod</additionalFields>
+        </springProfile>
+    </appender>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <root level="INFO">
+        <!-- Only log to Graylog if we are using the 'dev' or 'prod' profile -->
+        <springProfile name="dev | prod">
+            <appender-ref ref="gelf" />
+        </springProfile>
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>

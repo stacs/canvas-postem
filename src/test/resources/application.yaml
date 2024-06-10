@@ -1,0 +1,11 @@
+server:
+  servlet:
+    context-path: /lts-postem
+
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
+
+ltitool:
+  baseUrl: http://localhost:8080

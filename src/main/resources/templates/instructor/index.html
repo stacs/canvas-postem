@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <script type="text/javascript" th:inline="javascript">
+        function setFileName()
+        {
+            var filename = $('#myFile').val().split('\\').pop();
+            $('#fileTitle').val($('#myFile').val().split(/[\/\\]/).pop().split('.')[0]);
+            $('#filename').val(filename);
+            $('#filename').attr('placeholder', filename);
+            $('#filename').focus();
+        }
+        function checkExistingFile()
+        {
+            if($('#myFile').val().length > 0){
+
+                 var fileTitleText = $('#fileTitle').val();
+
+                 /*<![CDATA[*/
+
+                 var courseFiles1 =  /*[[${courseFiles}]]*/;
+                 for(let i=0; i<courseFiles1.length; i++){
+                    if(fileTitleText == courseFiles1[i].displayName){
+                        return confirm('Overwrite existing file?');
+                    }
+                 }
+
+                /*]]>*/
+
+                return true;
+            }
+            else{
+
+                let html1 = '<div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive">'
+                html1 += '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>'
+                html1 += 'No file uploaded. Please upload a valid CSV file';
+                html1 += '</strong><br></div>';
+                $("#alerts_div").html(html1);
+                $("#alerts_div").show();
+                return false;
+            }
+
+        }
+
+        function addAriaClasses(){
+
+             $('.paginate_button').each(function () {
+                    $(this).attr("aria-label", "Go to page " + $(this).text());
+             });
+
+             $('.page-link').each(function () {
+                   let attr = $(this).attr('aria-current');
+                   if (typeof attr !== 'undefined' && attr !== false) {
+                      $(this).attr("aria-label", "Page " + $(this).text() + ". Current Page. " + $("#feedbackTable_info").html());
+                   }
+
+                   let attr2 = $(this).attr('aria-disabled');
+                   if (typeof attr2 !== 'undefined' && attr2 !== false) {
+                     $(this).attr("tabindex", "-1");
+                  }
+             })
+
+             $("#feedbackTable_previous").attr("aria-label", "Go to previous page");
+             $("#feedbackTable_next").attr("aria-label", "Go to next page");
+        }
+        $(document).ready(function(){
+             var table = $('#feedbackTable').DataTable({
+                searching: false,
+                initComplete: function(settings, json) {
+                  addAriaClasses();
+                }
+             });
+
+             $('#feedbackTable').on( 'draw.dt', function () {
+                addAriaClasses();
+             } );
+
+        });
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div>
+                <h2>Description</h2>
+                <div class="text-default">The Posted Feedback tool is a way for instructors to provide detailed text feedback to students by uploading a single CSV file.  Your CSV file can contain multiple columns of feedback and you can upload as many different CSV files as you wish.</div>
+                <h2>Instructions</h2>
+                <div class="text-default">
+                <ol style="margin-left:-25px">
+                <li>To begin, download your course template CSV file below.  Your template will contain all of the required columns and is pre-populated with your student roster.  Add your data/feedback/grades in the columns to the right of the required columns.  Make sure that you put the feedback for each student in the appropriate row and column.</li>
+                <li>When you are ready, save and upload your completed template file below.</li>
+                </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+            <div class="form-group">
+                <div  id="alerts_div" style="display:none"></div>
+                <div class="alert alert-danger alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'error'}">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong><span th:text="${description}" /></strong><br>
+                    <ul style="padding-left:20px" th:if="${badUsers != null}">
+                        <li th:each="badUser : ${badUsers}"><span th:text="${badUser}" /></li>
+                    </ul>
+                </div>
+                <div class="alert alert-success alert-dismissable" role="alert" aria-live="assertive" th:if="${ status == 'success'}">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong><span th:text="${description}" /></strong><br>
+                </div>
+                <h2>Add/Update Feedback</h2>
+                <a th:href="@{'/downloadFile' }" >Download your course template</a><br>
+            </div>
+        <form th:action="@{/upload}" onsubmit="return checkExistingFile()" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="myFile" id="choose">Feedback File (CSV)</label><br/>
+                <button id="uploadButton" type="button" class="btn btn-custom" onclick="document.getElementById('myFile').click(); return false;" aria-labelledby="choose uploadButton">Choose File</button>
+                <input type="file" class="form-control-file" name="myFile" id="myFile" onchange="setFileName()" style="display: none;"/>
+                <label for="filename" class="hide">
+                    Uploaded File
+                </label>
+                <input type="text" id="filename" autocomplete="off" readonly placeholder="No File Uploaded" aria-labelledby="fileHelp filename"><br/>
+                <small id="fileHelp" class="form-text text-muted">File with extension *.csv based on course template. File Size Limit = 10 MB.</small>
+            </div>
+            <div class="form-group">
+                <label for="fileTitle">Title</label><br>
+                <input type="text" id="fileTitle" name="fileTitle"/>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="releaseCheckbox" />
+                    Release feedback to participants?
+                </label>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-custom-dark">Upload</button>
+            </div>
+        </form>
+        <div class="table_wrapper">
+        <table class="table table-bordered" id="feedbackTable" data-toggle="table" data-pagination="true" data-pagination-v-align="bottom" data-smart-display="true" data-page-size="10" data-sort-name="title" data-sort-order="asc">
+        <thead style="background-color: #f5f5f5;">
+        <tr>
+            <th scope="col" data-sortable="true" data-field="title">Title</th>
+            <th scope="col" data-sortable="true" data-field="modified by">Modified By</th>
+            <th scope="col" data-sortable="true" data-field="last modified">Last Modified</th>
+            <th scope="col" data-sortable="true" data-field="released">Released</th>
+            <th scope="col" data-sortable="true" data-field="actions">Actions</th>
+        </tr></thead>
+        <tbody>
+            <tr th:each="courseFile : ${courseFiles}">
+                <th scope="row"><span th:text="${courseFile.displayName}" /></th>
+                <td><span th:text="${courseFile.modifiedBy}" /></td>
+                <td><span th:text="${courseFile.updatedAt}" /></td>
+                <td>
+                    <span th:text="${courseFile.hidden? 'Yes' : 'No' }" />
+                </td>
+                <td style="width:200px">
+                    <div class="dropdown">
+                      <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenu${courseFileStat.index}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Actions
+                        <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenu${courseFileStat.index}">
+                        <li><a th:href="@{'/viewFile?fileId=' + ${courseFile.fileId} }" >View</a></li>
+                        <li><a th:href="@{'/studentView?fileId=' + ${courseFile.fileId} }">Student View</a></li>
+                        <li><a th:href="@{'/editFile?fileId=' + ${courseFile.fileId} + '&editType=rename' + '&displayName='+ ${courseFile.displayName} }" >Edit Title</a></li>
+                        <li><a th:href="@{'/editFile?fileId=' + ${courseFile.fileId} + '&editType=add' + '&displayName='+ ${courseFile.displayName} }">Upload New Version</a></li>
+                        <li><a th:href="@{'/downloadCSV?fileId=' + ${courseFile.fileId} }">Download</a></li>
+                        <li th:if="${courseFile.hidden}"><a th:href="@{'/unrelease?fileId=' + ${courseFile.fileId} + '&displayName='+ ${courseFile.displayName} }">Unrelease</a></li>
+                        <li th:if="${!courseFile.hidden}"><a th:href="@{'/release?fileId=' + ${courseFile.fileId} + '&displayName='+ ${courseFile.displayName} }">Release</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a th:href="'#fileModal_'+${courseFile.fileId}" data-toggle="modal" th:attr="data-target='#fileModal_' + ${courseFile.fileId}">Delete</a></li>
+                      </ul>
+                    </div>
+                    <div style='display:none' th:id="'fileModalMessage_' + ${courseFile.fileId}"> Are you sure you want to Delete <span th:text="${courseFile.displayName}" />? Yes </div>
+                    <div th:id="'fileModal_'+ ${courseFile.fileId}" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirm Delete File</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body" role="text">
+                                  Are you sure you want to Delete <span th:text="${courseFile.displayName}" />?
+                                </div>
+                                <div class="modal-footer">
+                                    <a th:href="@{'/delete?fileId=' + ${courseFile.fileId}  }" style="text-decoration:none" role="button" class="btn btn-custom-dark" aria-labelledby="fileModalMessage_${courseFile.fileId} ">Yes</a>
+                                    <button type="button" class="btn btn-custom-dark" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br/><br/>
+    </div>
+</div>
+</body>
+</html>

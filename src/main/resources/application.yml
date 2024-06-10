@@ -1,0 +1,32 @@
+server:
+  servlet:
+    context-path: /lts-postem
+  tomcat:
+    max-swallow-size: 20MB
+
+spring:
+  datasource:
+    url:
+    username:
+    password:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    database: mysql
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  mvc:
+    servlet:
+      load-on-startup: 1
+  profiles:
+    active: dev
+
+ltitool:
+  toolName: lts-postem
+  baseUrl: http://localhost:8080
+  canvas:
+    apiUrl:
+    apiToken:
