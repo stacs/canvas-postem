@@ -24,6 +24,42 @@ public class SecurityConfig {
             "/.well-known/jwks.json",
             "/lti/login")
         .permitAll()
+        .antMatchers("/viewFile")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/studentView")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/studentFileInfo")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/editFile")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/upload")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/uploadNewVersion")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/delete")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/release")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/unrelease")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/downloadFile")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/downloadCSV")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
+        .antMatchers("/renameFile")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
         .antMatchers("/**")
         .access(
             "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'STUDENT', 'TA', 'ADMIN')");

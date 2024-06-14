@@ -1,0 +1,32 @@
+server:
+  servlet:
+    context-path: /lts-postem
+  tomcat:
+    max-swallow-size: 20MB
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+    database: h2
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  mvc:
+    servlet:
+      load-on-startup: 1
+  profiles:
+    active: local
+
+ltitool:
+  toolName: posted-feedback
+  baseUrl: http://localhost:8080
+  canvas:
+    apiUrl:
+    apiToken:
