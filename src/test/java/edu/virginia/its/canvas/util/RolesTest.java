@@ -45,6 +45,7 @@ public class RolesTest {
     roles.add(role);
     SecurityContextHolder.getContext()
         .setAuthentication(getToken(roles, "test", "test@example.com", "123", "StudentEnrollment"));
+    this.mockMvc.perform(get("/instructorHome")).andExpect(status().isForbidden());
     this.mockMvc.perform(get("/viewFile")).andExpect(status().isForbidden());
     this.mockMvc.perform(get("/studentView")).andExpect(status().isForbidden());
     this.mockMvc.perform(get("/studentFileInfo")).andExpect(status().isForbidden());

@@ -24,6 +24,9 @@ public class SecurityConfig {
             "/.well-known/jwks.json",
             "/lti/login")
         .permitAll()
+        .antMatchers("/instructorHome")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
         .antMatchers("/viewFile")
         .access(
             "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
