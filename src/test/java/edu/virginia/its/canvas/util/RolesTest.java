@@ -1,5 +1,6 @@
 package edu.virginia.its.canvas.util;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -7,6 +8,7 @@ import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.virginia.its.canvas.PostemApplication;
 import edu.virginia.its.canvas.config.SecurityConfig;
 import edu.virginia.its.canvas.lti.util.CanvasAuthenticationToken;
+import edu.virginia.its.canvas.service.impl.CanvasFileService;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -32,15 +35,28 @@ public class RolesTest {
 
   @Autowired private MockMvc mockMvc;
 
+  @MockBean private CanvasFileService canvasFileService;
+
   @Test
   void noAuth() throws Exception {
     this.mockMvc.perform(get("/")).andExpect(status().isForbidden());
     this.mockMvc.perform(get("/config.json")).andExpect(status().isOk());
   }
 
+  @Test
+  public void testAllowedFeatures_teacher() throws Exception {
+    List<String> roles = new ArrayList<>();
+    roles.add("ROLE_INSTRUCTOR");
+    SecurityContextHolder.getContext()
+        .setAuthentication(getToken(roles, "user", "test@example.com", "123", "TeacherEnrollment"));
+    when(canvasFileService.listFiles("123", "tz")).thenReturn(new ArrayList<>());
+
+    this.mockMvc.perform(get("/instructorHome")).andExpect(status().isOk());
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {"ROLE_STUDENT"})
-  void forbiddenFeatures_student(String role) throws Exception {
+  void testForbiddenFeatures_student(String role) throws Exception {
     List<String> roles = new ArrayList<>();
     roles.add(role);
     SecurityContextHolder.getContext()
