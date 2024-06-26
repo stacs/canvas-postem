@@ -24,6 +24,22 @@ public class SecurityConfig {
             "/.well-known/jwks.json",
             "/lti/login")
         .permitAll()
+        .antMatchers(
+            "/instructorHome",
+            "/viewFile",
+            "/studentView",
+            "/studentFileInfo",
+            "/editFile",
+            "/upload",
+            "/uploadNewVersion",
+            "/delete",
+            "/release",
+            "/unrelease",
+            "/downloadFile",
+            "/downloadCSV",
+            "/renameFile")
+        .access(
+            "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')")
         .antMatchers("/**")
         .access(
             "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'STUDENT', 'TA', 'ADMIN')");

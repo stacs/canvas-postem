@@ -1,32 +1,32 @@
 server:
   servlet:
-    context-path: ${context.path}
+    context-path: /lts-postem
   tomcat:
     max-swallow-size: 20MB
 
 spring:
   datasource:
-    url: ${db.url}
-    username: ${db.user}
-    password: ${db.pass}
+    url: jdbc:h2:mem:test
+    username: sa
+    password:
   jpa:
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-    database: mysql
+        show_sql: false
+        format_sql: false
+    database: h2
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     open-in-view: false
   mvc:
     servlet:
       load-on-startup: 1
   profiles:
-    active: dev
+    active: local
 
 ltitool:
   toolName: posted-feedback
   baseUrl: http://localhost:8080
   canvas:
-    apiUrl: ${api.url}
-    apiToken: ${api.token}
+    apiUrl:
+    apiToken:
