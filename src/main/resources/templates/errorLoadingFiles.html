@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1 th:text="#{uncognizedFiles.header}"></h1>
+<div>
+    <th:block th:utext="#{uncognizedFiles.description}"></th:block>
+</div>
+<a th:href="${folderLink}" target="_blank"> Link to the Folder </a>
+</body>
+</html>

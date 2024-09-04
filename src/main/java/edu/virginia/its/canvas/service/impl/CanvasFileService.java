@@ -342,6 +342,7 @@ public class CanvasFileService {
         }
         String modifiedBy =
             jsonObj.getJSONObject("user") != null
+                    && jsonObj.getJSONObject("user").has("display_name")
                 ? jsonObj.getJSONObject("user").getString("display_name")
                 : "";
 
@@ -391,6 +392,7 @@ public class CanvasFileService {
                     }
                     String modifiedBy =
                         jsonObj.getJSONObject("user") != null
+                                && jsonObj.getJSONObject("user").has("display_name")
                             ? jsonObj.getJSONObject("user").getString("display_name")
                             : "";
 

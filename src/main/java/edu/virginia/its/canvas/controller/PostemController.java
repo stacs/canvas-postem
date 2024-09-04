@@ -54,7 +54,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -74,9 +74,27 @@ public class PostemController {
             + " with roles: "
             + roles);
 
+    List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+    // LTI-290
+    boolean foundFilesWithoutOwners = false;
+    for (CanvasData.File file : fileList) {
+      if (file.modifiedBy() == null || file.modifiedBy().equalsIgnoreCase("")) {
+        foundFilesWithoutOwners = true;
+        break;
+      }
+    }
+
     if (roles.contains("TeacherEnrollment") || roles.contains("TaEnrollment")) {
 
-      model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
+      if (foundFilesWithoutOwners) {
+        StringBuilder link = new StringBuilder(APIHOST.replace("api/v1", ""));
+        link.append("courses/")
+            .append(courseId)
+            .append("/files/folder/Posted Feedback (Do NOT Publish)");
+        model.addAttribute("folderLink", link.toString());
+        return "errorLoadingFiles";
+      }
+      model.addAttribute("courseFiles", fileList);
       model.addAttribute("user", user);
       model.addAttribute("courseId", courseId);
       model.addAttribute("userId", userId);
@@ -84,7 +102,9 @@ public class PostemController {
       return "instructor/index";
     } else if (roles.contains("StudentEnrollment") || roles.contains("Waitlisted Student")) {
 
-      List<CanvasData.File> fileList = canvasFileService.listFiles(courseId, timeZone);
+      if (foundFilesWithoutOwners) {
+        return "error";
+      }
       List<CanvasData.File> filteredList = canvasFileService.filterByUser(fileList, user);
       model.addAttribute("studentFilesList", filteredList);
       model.addAttribute("user", user);
@@ -94,7 +114,15 @@ public class PostemController {
       return "student/index";
     } else if (roles.contains("Account Admin")) {
 
-      model.addAttribute("courseFiles", canvasFileService.listFiles(courseId, timeZone));
+      if (foundFilesWithoutOwners) {
+        StringBuilder link = new StringBuilder(APIHOST.replace("api/v1", ""));
+        link.append("courses/")
+            .append(courseId)
+            .append("/files/folder/Posted Feedback (Do NOT Publish)");
+        model.addAttribute("folderLink", link.toString());
+        return "errorLoadingFiles";
+      }
+      model.addAttribute("courseFiles", fileList);
       model.addAttribute("user", user);
       model.addAttribute("courseId", courseId);
       model.addAttribute("userId", userId);
@@ -102,7 +130,7 @@ public class PostemController {
       return "instructor/index";
     }
 
-    return "unauthorized";
+    return "error";
   }
 
   @GetMapping("/instructorHome")
@@ -113,7 +141,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -132,7 +160,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -178,7 +206,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -229,7 +257,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(messageUtils.getMessage("dashboard.unauthorized"));
+          .body(messageUtils.getMessage("error403.description"));
     }
 
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
@@ -251,7 +279,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -280,7 +308,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -379,7 +407,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -487,7 +515,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -526,7 +554,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -564,7 +592,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -602,7 +630,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(messageUtils.getMessage("dashboard.unauthorized"));
+          .body(messageUtils.getMessage("error403.description"));
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -636,7 +664,7 @@ public class PostemController {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(messageUtils.getMessage("dashboard.unauthorized"));
+          .body(messageUtils.getMessage("error403.description"));
     }
 
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
@@ -701,7 +729,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -738,7 +766,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
@@ -766,7 +794,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     model.addAttribute("studentFilesList", filteredList);
@@ -781,7 +809,7 @@ public class PostemController {
     try {
       token = CanvasAuthenticationToken.getToken();
     } catch (Exception e) {
-      return "unauthorized";
+      return "error";
     }
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
