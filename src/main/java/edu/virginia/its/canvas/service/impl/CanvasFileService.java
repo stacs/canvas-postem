@@ -97,7 +97,7 @@ public class CanvasFileService {
     LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
     headerMap.add(
         "Content-disposition",
-        "form-data; name=file; filename=" + multipartFile.getOriginalFilename());
+        "form-data; name=file; filename=\"" + multipartFile.getOriginalFilename() + "\"");
     headerMap.add("Content-type", multipartFile.getContentType());
 
     String resp = "";
