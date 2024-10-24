@@ -1,6 +1,10 @@
 server:
   servlet:
     context-path: ${context.path}
+    session:
+      cookie:
+        same-site: None
+        secure: true
   tomcat:
     max-swallow-size: 20MB
 
@@ -10,10 +14,6 @@ spring:
     username: ${db.user}
     password: ${db.pass}
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
     database: mysql
     hibernate:
       ddl-auto: none
@@ -26,7 +26,7 @@ spring:
 
 ltitool:
   toolName: posted-feedback
-  baseUrl: http://localhost:8080
+  baseUrl: ${baseUrl}
   canvas:
     apiUrl: ${api.url}
     apiToken: ${api.token}

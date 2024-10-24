@@ -1,7 +1,7 @@
 package edu.virginia.its.canvas.model;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
-import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

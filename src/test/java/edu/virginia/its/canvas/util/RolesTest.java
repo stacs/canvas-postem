@@ -4,12 +4,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.nimbusds.jose.shaded.json.JSONObject;
 import edu.virginia.its.canvas.PostemApplication;
 import edu.virginia.its.canvas.config.SecurityConfig;
 import edu.virginia.its.canvas.lti.util.CanvasAuthenticationToken;
 import edu.virginia.its.canvas.service.impl.CanvasFileService;
 import java.util.*;
+import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
