@@ -1,6 +1,6 @@
 package edu.virginia.its.canvas.util;
 
-import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.shaded.gson.internal.LinkedTreeMap;
 import edu.virginia.its.canvas.lti.util.RolesMap;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,9 +32,13 @@ public class CanvasRoleMapper implements GrantedAuthoritiesMapper {
     for (GrantedAuthority authority : authorities) {
       OidcUserAuthority userAuth = (OidcUserAuthority) authority;
       Object customClaims = userAuth.getAttributes().get(Claims.CUSTOM);
-      if (customClaims instanceof JSONObject customJson) {
-        String enrollmentRoles = customJson.getAsString(Constants.CANVAS_ROLES);
-        if (!ObjectUtils.isEmpty(enrollmentRoles)) {
+      log.info("customClaims: {}", customClaims);
+      log.info("customClaims.getClass(): {}", customClaims.getClass());
+      if (customClaims instanceof LinkedTreeMap map) {
+        Object enrollmentRolesObject = map.get(Constants.CANVAS_ROLES);
+        log.info("enrollmentRolesObject: {}", enrollmentRolesObject);
+        if (enrollmentRolesObject instanceof String enrollmentRoles
+            && !ObjectUtils.isEmpty(enrollmentRoles)) {
           String[] splitEnrollmentRoles = enrollmentRoles.split(",");
           for (String splitEnrollmentRole : splitEnrollmentRoles) {
             String newRole = roleMappings.get(splitEnrollmentRole);
