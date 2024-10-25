@@ -9,10 +9,15 @@
                           $("#bodyContent").html("");
                        }
                        else{
+                            var csrfHeader = $('#_csrf_header').attr('content');
+                            var csrfToken = $('#_csrf').attr('content');
+                            var requestHeaders = {};
+                            requestHeaders[csrfHeader] = csrfToken;
                             $.ajax({
                                     method: "GET",
                                     dataType: "json",
-                                    url: "/lts-postem/studentFileInfo",
+                                    headers: requestHeaders,
+                                    url: "/lts-posted-feedback/studentFileInfo",
                                     data: {
                                          "fileId" : fileId,
                                          "user" : choice
