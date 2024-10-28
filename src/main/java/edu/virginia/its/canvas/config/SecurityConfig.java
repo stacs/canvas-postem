@@ -1,6 +1,6 @@
 package edu.virginia.its.canvas.config;
 
-import edu.virginia.its.canvas.util.CanvasRoleMapper;
+import edu.virginia.its.canvas.lti.roles.CanvasRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
