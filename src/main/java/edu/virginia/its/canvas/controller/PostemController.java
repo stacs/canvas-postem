@@ -1,5 +1,7 @@
 package edu.virginia.its.canvas.controller;
 
+import static edu.virginia.its.canvas.lti.util.Constants.CANVAS_ROLES_CUSTOM_KEY;
+
 import edu.virginia.its.canvas.lti.util.CanvasAuthenticationToken;
 import edu.virginia.its.canvas.model.*;
 import edu.virginia.its.canvas.repos.UserFileViewLogRepository;
@@ -59,7 +61,7 @@ public class PostemController {
 
     String courseId = token.getCustomValue(Constants.CANVAS_COURSE_ID);
     String userId = token.getCustomValue(Constants.CANVAS_USER_ID);
-    String roles = token.getCustomValue(Constants.CANVAS_ROLES);
+    String roles = token.getCustomValue(CANVAS_ROLES_CUSTOM_KEY);
     String timeZone = token.getCustomValue(Constants.CANVAS_TIMEZONE);
     String user = token.getCustomValue(Constants.CANVAS_USER);
 
