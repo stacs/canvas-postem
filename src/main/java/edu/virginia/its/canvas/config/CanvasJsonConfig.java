@@ -1,5 +1,7 @@
 package edu.virginia.its.canvas.config;
 
+import static edu.virginia.its.canvas.lti.util.Constants.CANVAS_ROLES_CUSTOM_KEY;
+
 import edu.virginia.its.canvas.util.Constants;
 import edu.virginia.lts.canvas.Config;
 import edu.virginia.lts.canvas.Extension;
@@ -39,7 +41,7 @@ public class CanvasJsonConfig {
             .defaultString("hidden")
             .customField(Constants.CANVAS_COURSE_ID, "$Canvas.course.id")
             .customField(Constants.CANVAS_USER_ID, "$Canvas.user.id")
-            .customField(Constants.CANVAS_ROLES, "$Canvas.membership.roles")
+            .customField(CANVAS_ROLES_CUSTOM_KEY, "$Canvas.membership.roles")
             .customField(Constants.CANVAS_TIMEZONE, "$Person.address.timezone")
             .customField(Constants.CANVAS_USER, "$Canvas.user.loginId")
             .build();
