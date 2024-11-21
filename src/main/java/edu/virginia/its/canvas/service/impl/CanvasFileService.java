@@ -779,6 +779,9 @@ public class CanvasFileService {
   }
 
   public boolean isCSVFile(MultipartFile file) {
+    if(!file.getOriginalFilename().contains(".")){
+      return false;
+    }
     String[] fragments = file.getOriginalFilename().split("\\.");
     if (file.getContentType().equalsIgnoreCase("text/csv")
         || (file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")
