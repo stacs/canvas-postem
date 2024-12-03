@@ -1,7 +1,7 @@
 package edu.virginia.its.canvas.config;
 
 import edu.virginia.its.canvas.lti.roles.CanvasRoleMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.virginia.its.canvas.lti.util.AuthorizationUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +9,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
 
@@ -18,24 +16,19 @@ import uk.ac.ox.ctl.lti13.Lti13Configurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  @Autowired public CanvasRoleMapper canvasRoleMapper;
+  public final CanvasRoleMapper canvasRoleMapper;
+
+  public SecurityConfig(CanvasRoleMapper canvasRoleMapper) {
+    this.canvasRoleMapper = canvasRoleMapper;
+  }
 
   @Bean
   protected SecurityFilterChain securityFilterChain(HttpSecurity http, ApplicationContext context)
       throws Exception {
-    String studentAccessString =
+    String studentAccess =
         "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'STUDENT', 'TA', 'ADMIN')";
-    String noStudentAccessString =
+    String noStudentAccess =
         "!hasAnyRole('OBSERVER', 'LIBRARIAN', 'DESIGNER') and hasAnyRole('INSTRUCTOR', 'TA', 'ADMIN')";
-    DefaultHttpSecurityExpressionHandler expressionHandler =
-        new DefaultHttpSecurityExpressionHandler();
-    expressionHandler.setApplicationContext(context);
-    WebExpressionAuthorizationManager studentAccess =
-        new WebExpressionAuthorizationManager(studentAccessString);
-    WebExpressionAuthorizationManager noStudentAccess =
-        new WebExpressionAuthorizationManager(noStudentAccessString);
-    studentAccess.setExpressionHandler(expressionHandler);
-    noStudentAccess.setExpressionHandler(expressionHandler);
     http.authorizeHttpRequests(
         auth ->
             auth.requestMatchers(
@@ -60,9 +53,9 @@ public class SecurityConfig {
                     "/downloadFile",
                     "/downloadCSV",
                     "/renameFile")
-                .access(noStudentAccess)
+                .access(AuthorizationUtils.getAuthz(noStudentAccess, context))
                 .requestMatchers("/**")
-                .access(studentAccess));
+                .access(AuthorizationUtils.getAuthz(studentAccess, context)));
     Lti13Configurer lti13Configurer =
         new Lti13Configurer().grantedAuthoritiesMapper(canvasRoleMapper);
     lti13Configurer.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
