@@ -1,10 +1,6 @@
 server:
   servlet:
     context-path: ${context.path}
-    session:
-      cookie:
-        same-site: None
-        secure: true
   tomcat:
     max-swallow-size: 20MB
 
