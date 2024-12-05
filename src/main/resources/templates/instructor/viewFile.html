@@ -41,9 +41,8 @@
 <body>
 <div layout:fragment="content">
     <div class="panel panel-default">
-        <div class="panel-heading"> <label><span th:text="${displayName}" /> </label>  <span th:text="${released ? '( Released )' : '( Unreleased )'}" /> </div>
-        <div class="panel-body">
-            Below are your students and the feedback you provided in this file.  Use the search box below to look for a specific student.
+        <div class="panel-heading"> <label><span th:text="${displayName}" /> </label>  <span th:if="${released == true}" th:text="#{instructor.viewFile.released}" /> <span th:if="${released != true}" th:text="#{instructor.viewFile.unreleased}" /> </div>
+        <div class="panel-body" th:utext="#{instructor.viewFile.instructions}">
         </div>
     </div>
     <div class="table_wrapper" tabIndex="1">
