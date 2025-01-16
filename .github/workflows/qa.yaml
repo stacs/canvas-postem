@@ -1,13 +1,13 @@
-name: Build
+name: Deploy to QA
 
-on: [push]
+on: workflow_dispatch
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY_NAME: posted-feedback
-  ECS_TASK_DEFINITION_NAME: posted-feedback
-  ECS_CONTAINER_NAME: posted-feedback-container
-  ECS_SERVICE_NAME: posted-feedback-service
+  ECR_REPOSITORY_NAME: uva-utilities
+  ECS_TASK_DEFINITION_NAME: uva-utilities
+  ECS_CONTAINER_NAME: uva-utilities-container
+  ECS_SERVICE_NAME: uva-utilities-service
   ECS_CLUSTER_NAME: lti-tools
 
 permissions:
@@ -15,48 +15,49 @@ permissions:
   contents: read    # This is required by AWS for actions/checkout
 
 jobs:
-  build:
+  qa-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          server-id: 'github'
-      - name: Build
-        run: mvn clean install
-        env:
-          GITHUB_TOKEN: ${{secrets.DEPLOY_GITHUB_TOKEN}}
-      - name: Get Artifact Version
-        run: echo "ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Deploy
-        run: mvn deploy
-        env:
-          GITHUB_TOKEN: ${{secrets.DEPLOY_GITHUB_TOKEN}}
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials for dev
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
-      - name: Login to Amazon ECR
-        id: login-ecr
+      - name: Login to dev ECR
+        id: login-ecr-dev
         uses: aws-actions/amazon-ecr-login@v2
-      - name: Build, tag, and push docker image to Amazon ECR
-        id: build-image
+      - name: Pull image from dev ECR
+        id: pull-image
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: ${{ steps.login-ecr-dev.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$BRANCH -t $REGISTRY/$REPOSITORY:latest .
+          docker pull $REGISTRY/$REPOSITORY:$BRANCH
+          docker tag $REGISTRY/$REPOSITORY:$BRANCH $REPOSITORY:$BRANCH
+
+      - name: Configure AWS credentials for QA
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_QA_ROLE }}
+      - name: Login to qa ECR
+        id: login-ecr-qa
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Push image to qa ECR
+        id: push-image
+        env:
+          REGISTRY: ${{ steps.login-ecr-qa.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          docker tag $REPOSITORY:$BRANCH $REGISTRY/$REPOSITORY:$BRANCH
           docker push $REGISTRY/$REPOSITORY:$BRANCH
-          docker push $REGISTRY/$REPOSITORY:latest
           echo "image=$REGISTRY/$REPOSITORY:$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Download task definition
@@ -69,7 +70,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ steps.push-image.outputs.image }}
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
