@@ -1,0 +1,59 @@
+name: Deploy to Prod
+
+on: workflow_dispatch
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY_NAME: uva-utilities
+
+permissions:
+  id-token: write   # This is required by AWS for requesting the JWT
+  contents: read    # This is required by AWS for actions/checkout
+
+jobs:
+  prod-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get Artifact Version
+        run: echo "ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials for QA
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_QA_ROLE }}
+      - name: Login to QA ECR
+        id: login-ecr-qa
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Pull image from qa ECR
+        id: pull-image
+        env:
+          REGISTRY: ${{ steps.login-ecr-qa.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+          BRANCH: ${{ github.ref_name }}
+          IMAGE_TAG: ${{ env.ARTIFACT_VERSION }}
+        run: |
+          docker pull $REGISTRY/$REPOSITORY:$BRANCH
+          docker tag $REGISTRY/$REPOSITORY:$BRANCH $REPOSITORY:$IMAGE_TAG
+
+      - name: Configure AWS credentials for prod
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_PROD_ROLE }}
+      - name: Login to prod ECR
+        id: login-ecr-prod
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Push image to prod ECR
+        id: push-image
+        env:
+          REGISTRY: ${{ steps.login-ecr-prod.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
+          IMAGE_TAG: ${{ env.ARTIFACT_VERSION }}
+        run: |
+          docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
