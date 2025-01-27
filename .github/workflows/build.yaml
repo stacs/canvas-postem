@@ -32,12 +32,6 @@ jobs:
         run: mvn clean install
         env:
           GITHUB_TOKEN: ${{secrets.DEPLOY_GITHUB_TOKEN}}
-      - name: Get Artifact Version
-        run: echo "ARTIFACT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Deploy
-        run: mvn deploy
-        env:
-          GITHUB_TOKEN: ${{secrets.DEPLOY_GITHUB_TOKEN}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <script type="text/javascript">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
                 function changeList(fileId) {
                        var choice = document.getElementById('participantselect').value;
                        if(choice == '-1'){
@@ -17,7 +18,7 @@
                                     method: "GET",
                                     dataType: "json",
                                     headers: requestHeaders,
-                                    url: "/lts-posted-feedback/studentFileInfo",
+                                    url: [[${contextPath}]] + "/studentFileInfo",
                                     data: {
                                          "fileId" : fileId,
                                          "user" : choice
@@ -53,6 +54,7 @@
                             });
                        }
                 }
+        /*]]>*/
     </script>
 </head>
 
