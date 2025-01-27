@@ -42,11 +42,19 @@ public class PostemController {
   @Value("${ltitool.canvas.apiToken}")
   private String APITOKEN;
 
+  @Value("${server.servlet.context-path}")
+  private String contextPath;
+
   @Autowired private CanvasFileService canvasFileService;
   @Autowired private CanvasUserService canvasUserService;
   @Autowired UserFileViewLogRepository userFileViewLogRepository;
 
   @Autowired MessageUtils messageUtils;
+
+  @ModelAttribute("contextPath")
+  public String getContextPath() {
+    return contextPath;
+  }
 
   @GetMapping("/launch")
   public String launch(Model model) {
