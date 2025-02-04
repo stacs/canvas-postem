@@ -1,14 +1,16 @@
 name: Deploy to QA
 
-on: workflow_dispatch
-
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY_NAME: uva-utilities
-  ECS_TASK_DEFINITION_NAME: uva-utilities
-  ECS_CONTAINER_NAME: uva-utilities-container
-  ECS_SERVICE_NAME: uva-utilities-service
-  ECS_CLUSTER_NAME: lti-tools
+on:
+  workflow_dispatch:
+    inputs:
+      dev_image_name:
+        description: "The tag of the docker image in DEV that we want to move to QA"
+        type: string
+        required: true
+      qa_image_name:
+        description: "The tag we want to give the docker image that is being put into QA"
+        type: string
+        required: true
 
 permissions:
   id-token: write   # This is required by AWS for requesting the JWT
@@ -16,65 +18,14 @@ permissions:
 
 jobs:
   qa-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Configure AWS credentials for dev
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_DEV_ROLE }}
-      - name: Login to dev ECR
-        id: login-ecr-dev
-        uses: aws-actions/amazon-ecr-login@v2
-      - name: Pull image from dev ECR
-        id: pull-image
-        env:
-          REGISTRY: ${{ steps.login-ecr-dev.outputs.registry }}
-          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          docker pull $REGISTRY/$REPOSITORY:$BRANCH
-          docker tag $REGISTRY/$REPOSITORY:$BRANCH $REPOSITORY:$BRANCH
-
-      - name: Configure AWS credentials for QA
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_QA_ROLE }}
-      - name: Login to qa ECR
-        id: login-ecr-qa
-        uses: aws-actions/amazon-ecr-login@v2
-      - name: Push image to qa ECR
-        id: push-image
-        env:
-          REGISTRY: ${{ steps.login-ecr-qa.outputs.registry }}
-          REPOSITORY: ${{ env.ECR_REPOSITORY_NAME }}
-          BRANCH: ${{ github.ref_name }}
-        run: |
-          docker tag $REPOSITORY:$BRANCH $REGISTRY/$REPOSITORY:$BRANCH
-          docker push $REGISTRY/$REPOSITORY:$BRANCH
-          echo "image=$REGISTRY/$REPOSITORY:$BRANCH" >> $GITHUB_OUTPUT
-
-      - name: Download task definition
-        env:
-          TASK_DEF: ${{ env.ECS_TASK_DEFINITION_NAME }}
-        run: aws ecs describe-task-definition --task-definition $TASK_DEF --query taskDefinition > task-definition.json
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ steps.push-image.outputs.image }}
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE_NAME }}
-          cluster: ${{ env.ECS_CLUSTER_NAME }}
-          wait-for-service-stability: true
+    uses: stacs/actions/.github/workflows/aws-deploy-qa.yaml@v1
+    secrets: inherit
+    with:
+      aws_region: us-east-1
+      ecr_repository_name: posted-feedback
+      ecs_task_definition_name: posted-feedback
+      ecs_container_name: posted-feedback-container
+      ecs_service_name: posted-feedback-service
+      ecs_cluster_name: lti-tools
+      dev_image_name: ${{inputs.dev_image_name}}
+      qa_image_name: ${{inputs.qa_image_name}}
