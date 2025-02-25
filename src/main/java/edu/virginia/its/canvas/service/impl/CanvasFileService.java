@@ -1,6 +1,9 @@
 package edu.virginia.its.canvas.service.impl;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.validators.RowMustHaveSameNumberOfColumnsAsFirstRowValidator;
 import edu.virginia.its.canvas.model.CanvasData;
 import edu.virginia.its.canvas.util.Constants;
 import java.io.BufferedReader;
@@ -714,12 +717,15 @@ public class CanvasFileService {
     return false;
   }
 
-  public ArrayList<String> validateFile(MultipartFile file, ArrayList<String> users) {
+  public ArrayList<String> validateFile(MultipartFile file, List<String> users) {
 
     ArrayList<String> badUsers = new ArrayList<>();
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-      CSVReader csvReader = new CSVReader(reader);
+      CSVReader csvReader =
+          new CSVReaderBuilder(reader)
+              .withRowValidator(new RowMustHaveSameNumberOfColumnsAsFirstRowValidator())
+              .build();
       String[] nextLine;
 
       nextLine = csvReader.readNext();
@@ -752,6 +758,9 @@ public class CanvasFileService {
         }
       }
       reader.close();
+    } catch (CsvValidationException csvEx) {
+      log.error(csvEx.getMessage(), csvEx);
+      badUsers.add(csvEx.getMessage());
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
