@@ -760,7 +760,7 @@ public class CanvasFileService {
       reader.close();
     } catch (CsvValidationException csvEx) {
       log.error(csvEx.getMessage(), csvEx);
-      badUsers.add(csvEx.getMessage());
+      badUsers.add("Row " + csvEx.getLineNumber() + ": " + csvEx.getMessage());
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }

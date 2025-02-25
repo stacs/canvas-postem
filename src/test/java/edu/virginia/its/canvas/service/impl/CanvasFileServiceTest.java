@@ -46,6 +46,6 @@ class CanvasFileServiceTest {
         new MockMultipartFile("rowHasTooManyColumns.csv", inputStream);
     List<String> users = List.of("tj4u");
     List<String> errors = service.validateFile(mockMultipartFile, users);
-    assertTrue(errors.contains("Row was expected to have 3 elements but had 4 instead\n"));
+    assertTrue(errors.contains("Row 2: Row was expected to have 3 elements but had 4 instead\n"));
   }
 }
