@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpEntity;
@@ -37,9 +36,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class CanvasFileService {
 
   @Autowired private WebClient restClient;
-
-  @Value("${ltitool.canvas.apiToken}")
-  private String oauthToken;
 
   private String notifyCanvas(
       String fileName, Boolean uploadAsLocked, String courseId, String userId) {
@@ -59,7 +55,6 @@ public class CanvasFileService {
                           .queryParam("parent_folder_id", folderId)
                           .queryParam("locked", uploadAsLocked)
                           .build())
-              .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
               .bodyToMono(String.class)
               .block();
@@ -109,7 +104,6 @@ public class CanvasFileService {
           restClient
               .post()
               .uri(uploadUrl)
-              .header("Authorization", "Bearer " + oauthToken)
               .accept(MediaType.APPLICATION_JSON)
               .contentType(MediaType.MULTIPART_FORM_DATA)
               .body(BodyInserters.fromMultipartData(form))
@@ -144,7 +138,6 @@ public class CanvasFileService {
             restClient
                 .post()
                 .uri(uploadResponse.getString("location"))
-                .header("Authorization", "Bearer " + oauthToken)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
@@ -224,7 +217,6 @@ public class CanvasFileService {
                       uriBuilder
                           .path("/courses/" + courseId + "/folders/by_path/" + folder)
                           .build())
-              .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
               .bodyToMono(String.class)
               .block();
@@ -257,7 +249,6 @@ public class CanvasFileService {
                           .queryParam("locked", true)
                           .queryParam("parent_folder_path", "/")
                           .build())
-              .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
               .bodyToMono(String.class)
               .block();
@@ -284,7 +275,6 @@ public class CanvasFileService {
                         .queryParam("order", "desc")
                         .queryParam("per_page", 100)
                         .build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .toEntity(String.class)
             .block();
@@ -294,14 +284,7 @@ public class CanvasFileService {
     String nextPage = canvasNextPage(resp);
     while (nextPage != null) {
 
-      resp =
-          restClient
-              .get()
-              .uri(nextPage)
-              .header("Authorization", "Bearer " + oauthToken)
-              .retrieve()
-              .toEntity(String.class)
-              .block();
+      resp = restClient.get().uri(nextPage).retrieve().toEntity(String.class).block();
 
       populateFileList(resp, fileList, timeZone);
       nextPage = canvasNextPage(resp);
@@ -321,7 +304,6 @@ public class CanvasFileService {
               .uri(
                   uriBuilder ->
                       uriBuilder.path("/files/" + fileId).queryParam("include[]", "user").build())
-              .header("Authorization", "Bearer " + oauthToken)
               .retrieve()
               .bodyToMono(String.class)
               .block();
@@ -431,7 +413,6 @@ public class CanvasFileService {
         restClient
             .get()
             .uri(uriBuilder -> uriBuilder.path("/files/" + fileId).build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .bodyToMono(String.class)
             .block();
@@ -445,7 +426,6 @@ public class CanvasFileService {
       restClient
           .delete()
           .uri(uriBuilder -> uriBuilder.path("/files/" + fileId).build())
-          .header("Authorization", "Bearer " + oauthToken)
           .retrieve()
           .bodyToMono(String.class)
           .block();
@@ -461,7 +441,6 @@ public class CanvasFileService {
             .uri(
                 uriBuilder ->
                     uriBuilder.path("/files/" + fileId).queryParam("hidden", hide).build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .bodyToMono(String.class)
             .block();
@@ -481,7 +460,6 @@ public class CanvasFileService {
                         .queryParam("enrollment_state[]", "active")
                         .queryParam("per_page", 100)
                         .build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .toEntity(String.class)
             .block();
@@ -491,14 +469,7 @@ public class CanvasFileService {
     String nextPage = canvasNextPage(resp);
     while (nextPage != null) {
 
-      resp =
-          restClient
-              .get()
-              .uri(nextPage)
-              .header("Authorization", "Bearer " + oauthToken)
-              .retrieve()
-              .toEntity(String.class)
-              .block();
+      resp = restClient.get().uri(nextPage).retrieve().toEntity(String.class).block();
 
       populateUserLogins(resp, users);
       nextPage = canvasNextPage(resp);
@@ -536,7 +507,6 @@ public class CanvasFileService {
                         .queryParam("enrollment_state[]", "active")
                         .queryParam("per_page", 100)
                         .build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .toEntity(String.class)
             .block();
@@ -546,14 +516,7 @@ public class CanvasFileService {
     String nextPage = canvasNextPage(resp);
     while (nextPage != null) {
 
-      resp =
-          restClient
-              .get()
-              .uri(nextPage)
-              .header("Authorization", "Bearer " + oauthToken)
-              .retrieve()
-              .toEntity(String.class)
-              .block();
+      resp = restClient.get().uri(nextPage).retrieve().toEntity(String.class).block();
 
       populateUserDetails(resp, users);
       nextPage = canvasNextPage(resp);
@@ -618,7 +581,6 @@ public class CanvasFileService {
                         .queryParam("name", fileName + ".csv")
                         .queryParam("on_duplicate", "rename")
                         .build())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .bodyToMono(String.class)
             .block();
