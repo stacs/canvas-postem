@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -24,9 +23,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class CanvasUserService {
 
   @Autowired private WebClient restClient;
-
-  @Value("${ltitool.canvas.apiToken}")
-  private String oauthToken;
 
   public HashMap<String, String> getUsersOfCourse(String course_id) {
 
@@ -44,7 +40,6 @@ public class CanvasUserService {
                     .queryParam("per_page", 100)
                     .buildAndExpand()
                     .toString())
-            .header("Authorization", "Bearer " + oauthToken)
             .retrieve()
             .toEntity(String.class)
             .block();
@@ -54,14 +49,7 @@ public class CanvasUserService {
     String nextPage = canvasNextPage(resp);
     while (nextPage != null) {
 
-      resp =
-          restClient
-              .get()
-              .uri(nextPage)
-              .header("Authorization", "Bearer " + oauthToken)
-              .retrieve()
-              .toEntity(String.class)
-              .block();
+      resp = restClient.get().uri(nextPage).retrieve().toEntity(String.class).block();
 
       populateUsers(resp, userList);
       nextPage = canvasNextPage(resp);
